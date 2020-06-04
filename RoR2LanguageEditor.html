@@ -1,0 +1,422 @@
+<html>
+    <head>
+        <title>
+            RoR2 language assistant
+        </title>
+        <style>
+            @font-face {
+                font-family:"bombardier";
+                /* Install or place BOMBARD_.woff in the same folder as this file to load the font locally */
+                src: local('Bombardier'), url('BOMBARD_.woff') format('woff');
+                src: url("https://api.allorigins.win/raw?url=https://candyfonts.com/wp-data/2019/08/07/72363/BOMBARD_.ttf") format("truetype");
+            }
+
+            p {
+                margin: 0;
+            }
+
+            body {
+                font-family: Bombardier;
+                text-shadow: 1px 1px black;
+                font-size: 1.2em;
+                background-image: linear-gradient(170deg, #7d7c8f, #405060);
+                background-attachment: fixed;
+                color: white;
+                padding-bottom: 200px;
+            }
+
+            main {
+                padding: 25px;
+            }
+
+            main > fieldset {
+                margin-bottom: 10px;
+            }
+
+            .load {
+                display: flex;
+            }
+
+            .load fieldset {
+                display: flex;
+                flex-direction: column;
+                border-color: #aaa;
+                max-width: 300px;
+            }
+
+            .load p {
+                font-size: 0.8rem;
+                font-family: tahoma;
+                text-shadow: none;
+                margin-top: 5px;
+            }
+
+            .palette {
+                padding: 5px;
+                margin: 5px;
+                border: 1px solid #999;
+                background: #444;
+                box-shadow: 2px 2px 8px #222;
+            }
+
+           .replacements {
+                margin: 15px 0;
+            }
+
+            .replacements dd {
+                display: flex;
+                gap: 20px;
+            }
+
+            .replacements textarea {
+                width: 100%;
+                border: none;
+                padding: 5px;
+                background-color: #353535;
+                color: #bbb;
+                box-shadow: 2px 2px 8px #222;
+            }
+
+            .preview {
+                padding: 12px;
+                border: 1px solid #999;
+                background: #444;
+            }
+
+            .lang-file {
+                margin-top: 25px;
+            }
+
+            .lang-file[open] + .lang-file {
+                margin-top: 100px;
+            }
+
+            details h2 {
+                display: inline;
+            }
+
+            .lang-file dd {
+                box-shadow: 2px 2px 8px #222;
+            }
+
+            .lang-file dd + dt {
+                margin-top: 10px;
+            }
+
+            .edit-value {
+                width: 100%;
+                border: none;
+                padding: 5px;
+                background-color: #353535;
+                color: #bbb;
+            }
+
+            .cIsHealth {
+                color: #e58262;
+            }
+
+            .cIsDamage {
+                color: #e5c962;
+            }
+
+            .cIsHealing {
+                color: #9ce562;
+            }
+
+            .cIsUtility {
+                color: #95cde5;
+            }
+
+            .cStack {
+                color: #8990a7;
+            }
+
+            .cWorldEvent {
+                color: #ffc9f5;
+            }
+
+            .cArtifact {
+                color: #8a5bc0;
+            }
+
+            .cUserSetting {
+                color: #ffffd0;
+            }
+
+            .cDeath {
+                color: #fe7c7c;
+            }
+
+            .cSub {
+                color: #ccd3e0;
+            }
+
+            .cMono {
+                color: #8990a7;
+                letter-spacing: 5px;
+            }
+
+            .cShrine {
+                color: #efeb1c;
+            }
+
+            .cEvent {
+                color: #8394b3;
+            }
+
+            .palette span {
+                margin-right: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <main>
+            <fieldset class=load>
+                <legend>
+                    Load files
+                </legend>
+                <fieldset>
+                    <legend>Base game language</legend>
+                    <input type=file id=INPUT_FILE_BASE accept=.txt multiple>
+                    <p>Located in steamapps\common\Risk of Rain 2\Risk of Rain 2_Data\Language\en</p>
+                    <!-- <p>Can load merged files as well</p> -->
+                </fieldset>
+                <!-- <fieldset>
+                    <legend>Patches</legend>
+                    <input type=file id=INPUT_FILE_PATCH accept=.patch.txt multiple>
+                    <p>Created by this tool and store translation key/values like language files, but only ones different from the base game</p>
+                </fieldset>
+                <fieldset>
+                    <legend>Replacements</legend>
+                    <input type=file id=INPUT_FILE_REPLACEMENT accept=.replace-list.txt multiple>
+                </fieldset>
+                <fieldset>
+                    <legend>Convert Merged to Patches</legend>
+                    <input type=file id=INPUT_FILE_REPLACEMENT accept=.txt multiple>
+                    <p>Pre-existing modified language files can be loaded and aprsed into patches automatically</p>
+                </fieldset> -->
+            </fieldset>
+            <button class=export>Export data to zip file</button>
+            <!-- <details class=replacements>
+                <summary>Text replacements</summary>
+                <template class=replacement>
+                    <dt>Replace..... ...with</dt>
+                    <dd>
+                        <textarea class=replacement-search></textarea>
+                        <textarea class=replacement-replace></textarea>
+                    </dd>
+                </template>
+                <dl>
+
+                </dl>
+            </details>
+            <fieldset>
+                <legend>
+                    Filter
+                </legend>
+                <label>
+                    By key
+                    <input type=text id=INPUT_FILTER_KEY>
+                </label>
+                <label>
+                    By value
+                    <input type=text id=INPUT_FILTER_VALUE>
+                </label>
+            </fieldset> -->
+            <div class=palette>
+                <span class=cIsHealth>cIsHealth</span>
+                <span class=cIsDamage>cIsDamage</span>
+                <span class=cIsHealing>cIsHealing</span>
+                <span class=cIsUtility>cIsUtility</span>
+                <span class=cStack>cStack</span>
+                <span class=cWorldEvent>cWorldEvent</span>
+                <span class=cArtifact>cArtifact</span>
+                <span class=cUserSetting>cUserSetting</span>
+                <span class=cDeath>cDeath</span>
+                <span class=cSub>cSub</span>
+                <span class=cMono>cMono</span>
+                <span class=cShrine>cShrine</span>
+                <span class=cEvent>cEvent</span>
+            </div>
+            <template class=file>
+                <details class=lang-file open>
+                    <summary>
+                        <h2 class=file-name></h2>
+                    </summary>
+                    <dl>
+                    
+                    </dl>    
+                </details>
+            </template>
+            <template class=file-pair>
+                <dt></dt>
+                <dd class=preview></dd>
+                <dd><input type=text class=edit-value></dd>
+            </template>    
+            <div id=OUTPUT>
+
+            </div>    
+        </main>
+        <!-- FileSaver.js https://github.com/eligrey/FileSaver.js -->
+        <script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
+        <!-- JSZip https://stuk.github.io/jszip/ -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.3.0/jszip.min.js" integrity="sha256-J0jjrR5bYbE+saHyVcuvt2EIg5JAHN10VWyTHtVJV2E=" crossorigin="anonymous"></script>
+        <!-- App script -->
+        <script>
+'use_strict';
+const forEach = (subject, func) => {
+	if (subject.forEach) {
+		subject.forEach(func)
+	}
+	else {
+		Object.keys(subject).forEach(k => func.call(subject[k], k))
+	}
+}
+
+const parseBadJSON = (bad, identifier) => {
+    const fixed = 
+        bad
+        // Unquoted strings, randomly
+        .replace('strings:', '"strings":')
+        // Why \B?
+        .replace(/\\B/g, "B")
+        // Only escape double quotes, because we only use double quotes
+        .replace(/\\'/g, "'")
+        // Can't end a list with a comma
+        .replace(/,(\W+})/g, '$1')
+        // Comments
+        .replace(/^[\t ]+\/\/.+$/gm, '')
+    try {
+        return JSON.parse(fixed)
+    }
+    catch (error) {
+        if (error.message.includes('JSON.parse: expected')) {
+            const [match, message, line, column] = error.message.match(/JSON.parse: (.+?) at line (\d+) column (\d+)/)
+            const lines = bad.split('\n')
+            console.log(`Error parsing [${identifier}]: ${message}`)
+            const context = [
+                lines[line-2],
+                lines[line-1],
+                lines[line-1].replace(/[^\t ]/g, ' ').substr(0, column-1)+'^ message',
+                lines[line]
+            ].join('\n');
+            console.log(context)
+            console.log(bad)
+            console.log(fixed)
+            return {}
+        }
+        else {
+            throw error
+        }
+    }
+}
+
+const INPUT_FILE_BASE = document.getElementById('INPUT_FILE_BASE')
+const INPUT_FILTER_KEY = document.getElementById('INPUT_FILTER_KEY')
+const INPUT_FILTER_VALUE = document.getElementById('INPUT_FILTER_VALUE')
+const INPUT_REPLACEMENTS = document.getElementById('INPUT_REPLACEMENTS')
+const OUTPUT = document.getElementById('OUTPUT')
+
+const tpl = name => {
+    const e = document.querySelector(`template.${name}`)
+    if (!e) {
+        throw `template.${name} did not match any element`
+    }
+    return e.content.cloneNode(true)
+}
+
+let strings_files = {}
+let input_map = {}
+let replacements = []
+
+const parseMarkup = str => {
+    return str
+        .replace(/<(style|color)(?:=([^>]+))?>/gi, "<span data-tag='$1' data-value='$2'>")
+        .replace(/<\/(style|color)>/gi, '</span>')
+        .replace(/(\\n|\n)/g, '<br>')
+}
+
+const setPreview = (preview, value) => {
+    preview.innerHTML = parseMarkup(value)
+    preview.querySelectorAll('span[data-tag=color]').forEach(e => e.style.color = e.getAttribute('data-value'))
+    preview.querySelectorAll('span[data-tag=style]').forEach(e => e.classList.add(e.getAttribute('data-value')))
+}
+
+const renderFilteredFiles = () => {
+    input_map = {}
+    OUTPUT.innerHTML = ''
+    Object.keys(strings_files).forEach(file => {
+        input_map[file] = {}
+        const section = tpl('file')
+        section.querySelector('h2').textContent = file
+        const dl = section.querySelector('dl')
+        Object.keys(strings_files[file]).forEach(key => {
+            const value = strings_files[file][key]
+            const pair = tpl('file-pair')
+            pair.querySelector('dt').textContent = key
+            const preview = pair.querySelector('dd.preview')
+            setPreview(preview, value)
+            const input = pair.querySelector('input')
+            input.value = value.replace(/\n/g, "\\n")
+            input.initialValue = input.value
+            input.key = key
+            input.file = file
+            input.addEventListener('input', () => {
+                setPreview(preview, input.value)
+            })
+            input_map[file][key] = input
+            section.querySelector('dl').append(pair)
+        })
+        OUTPUT.append(section)
+    })
+}
+
+function onFilesChange() {
+    strings_files = {}
+    let waiting = 0
+    for (let i = 0; i < this.files.length; i++) {
+        const file = this.files[i];
+        const reader = new FileReader;
+        waiting++
+        reader.onload = x => {
+            waiting--
+            strings_files[file.name] = parseBadJSON(x.target.result, file.name).strings
+            if (waiting === 0) {
+                renderFilteredFiles()
+            }
+       }
+        reader.readAsText(file)
+    }
+}
+
+// const REPLACEMENT_LIST = document.querySelector('.replacements dl')
+// REPLACEMENT_LIST.append(tpl('replacement'))
+
+INPUT_FILE_BASE.addEventListener('change', onFilesChange, false)
+onFilesChange.call(INPUT_FILE_BASE)
+
+document.querySelector('button.export').addEventListener('click', () => {
+    const zip = new JSZip;
+    const en = zip.folder('en')
+    const language_ext = zip.folder('language_ext')
+    const output = {}
+
+    for (const file in strings_files) {
+        const strings = strings_files[file]
+        output[file] = {}
+        for (const key in strings) {
+            const value = strings[key]
+            output[file][key] = input_map[file][key].value
+        }
+        const str = JSON.stringify({strings: output[file]}, null, '	')
+        en.file(file, str)
+        language_ext.file(file.replace(/\.txt$/, '.language'), str)
+    }
+
+    zip.generateAsync({type:"blob"})
+        .then(content => saveAs(content, 'ror2languagefiles.zip'))
+})
+
+        </script>
+    </body>
+</html>

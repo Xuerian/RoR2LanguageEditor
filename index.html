@@ -44,15 +44,26 @@
                 max-width: 300px;
             }
 
-            .load p {
+            .load p,
+            .doc {
                 font-size: 0.8rem;
                 font-family: tahoma;
                 text-shadow: none;
                 margin-top: 5px;
             }
 
+            input[type=file] {
+                font-size: 1rem;
+            }
+
             ._pickup {
                 margin: 5px 0 0 0;
+            }
+
+            .export {
+                padding: 5px 10px;
+                margin: 10px;
+                font-size: 1rem;
             }
 
             .palette {
@@ -183,15 +194,16 @@
         <main>
             <fieldset class=load>
                 <legend>
-                    Load files
+                    Load language files to edit
                 </legend>
                 <fieldset>
                     <legend>Base game language</legend>
                     <input type=file id=INPUT_FILE_BASE accept=.txt multiple>
-                    <p>Located in steamapps\common\Risk of Rain 2\Risk of Rain 2_Data\Language\en</p>
+                    <p>Located in <b><u>steamapps\common\Risk of Rain 2\Risk of Rain 2_Data\Language\en</u></b></p>
+                    <p><b><u>Items.txt</u></b> and <b><u>Equipment.txt</u></b> are usually what you want to open</p>
                     <dl class=_pickup>
                         <dt>..._PICKUP:</dt>
-                        <dd><label><input type=radio name=_pickup value=normal> Normal</label></dd>
+                        <dd><label><input type=radio name=_pickup value=normal> Use _PICKUP</label></dd>
                         <dd><label><input type=radio name=_pickup value=copy> Copy _DESC</label></dd>
                         <dd><label><input type=radio name=_pickup value=desc checked> Use only _DESC</label></dd>
                     </dl>
@@ -215,6 +227,9 @@
 -->
             </fieldset>
             <button class=export>Save text files (As zip)</button>
+            <p class=doc>Modified language .txt files will be in /en. Replace your game language files with these to use your modifications.</p>
+            <p class=doc>.language files will be in /language_ext, which are just renamed .txt files. These can be loaded without replacing your default files when using BepInEx. Place them in BepInEx\plugins\SOME_FOLDER\</p>
+            <hr>
 <!--
             <details class=replacements>
                 <summary>Text replacements</summary>

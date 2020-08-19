@@ -132,6 +132,10 @@
                 color: #bbb;
             }
 
+            #TEST {
+                margin-top: 40px;
+            }
+
             .cIsHealth {
                 color: #e58262;
             }
@@ -293,7 +297,9 @@
             </template>    
             <div id=OUTPUT>
 
-            </div>    
+            </div>
+            <div id=TEST>
+            </div>
         </main>
         <!-- FileSaver.js https://github.com/eligrey/FileSaver.js -->
         <script src="https://cdn.jsdelivr.net/g/filesaver.js"></script>
@@ -410,6 +416,22 @@ const applyFilters = () => {
     }
 }
 
+const newEditorPair = (key, value) => {
+    const pair = tpl('file-pair')
+    pair.querySelector('.key').textContent = key
+    const preview = pair.querySelector('.preview')
+    setPreview(preview, value)
+    const input = pair.querySelector('input')
+    input.value = value.replace(/\n/g, "\\n")
+    input.initialValue = input.value
+    input.key = key
+    input.pair = pair.querySelector('.pair')
+    input.addEventListener('input', () => {
+        setPreview(preview, input.value)
+    })
+    return [input, pair]
+}
+
 const renderFilteredFiles = () => {
     input_map = {}
     OUTPUT.innerHTML = ''
@@ -432,19 +454,8 @@ const renderFilteredFiles = () => {
                     }
                 }
             }
-            const pair = tpl('file-pair')
-            pair.querySelector('.key').textContent = key
-            const preview = pair.querySelector('.preview')
-            setPreview(preview, value)
-            const input = pair.querySelector('input')
-            input.value = value.replace(/\n/g, "\\n")
-            input.initialValue = input.value
-            input.key = key
+            const [input, pair] = newEditorPair(key, value)
             input.file = file_name
-            input.pair = pair.querySelector('.pair')
-            input.addEventListener('input', () => {
-                setPreview(preview, input.value)
-            })
             input_map[file_name][key] = input
             section.append(pair)
         }
@@ -452,6 +463,10 @@ const renderFilteredFiles = () => {
     }
     applyFilters()
 }
+
+const [test_input, test_pair] = newEditorPair('TEST_STRING', '')
+test_input.setAttribute('placeholder', 'Test formatting here, it will not be saved or interfere with loaded files')
+document.getElementById('TEST').append(test_pair)
 
 function onFilesChange() {
     strings_files = {}

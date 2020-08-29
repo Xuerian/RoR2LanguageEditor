@@ -509,10 +509,11 @@ document.querySelector('button.export').addEventListener('click', () => {
     for (const [file_name, inputs] of Object.entries(input_map)) {
         output[file_name] = {}
         for (const [key, input] of Object.entries(inputs)) {
+            const value = input.value.replace(/\\n/g, "\n")
             if (_PICKUP_VALUE === 'desc' && key.endsWith('_DESC') && strings_files[file_name][key.replace('_DESC', '_PICKUP')]) {
-                output[file_name][key.replace('_DESC', '_PICKUP')] = input.value
+                output[file_name][key.replace('_DESC', '_PICKUP')] = value
             }
-            output[file_name][key] = input.value
+            output[file_name][key] = value
         }
         const str = JSON.stringify({strings: output[file_name]}, null, '	')
         en.file(file_name, str)

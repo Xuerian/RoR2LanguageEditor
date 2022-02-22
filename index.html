@@ -284,7 +284,7 @@
                         <h2 class=file-name></h2>
                     </summary>
                     <section>
-                    
+
                     </section>
                 </details>
             </template>
@@ -294,7 +294,7 @@
                     <div class=preview></div>
                     <div class=edit><input type=text class=edit-value></div>
                 </div>
-            </template>    
+            </template>
             <div id=OUTPUT>
 
             </div>
@@ -318,7 +318,7 @@ const forEach = (subject, func) => {
 }
 
 const parseBadJSON = (bad, identifier) => {
-    const fixed = 
+    const fixed =
         bad
         // Unquoted strings, randomly
         .replace('strings:', '"strings":')
@@ -519,7 +519,7 @@ document.querySelector('button.export').addEventListener('click', () => {
         en.file(file_name, str)
         language_ext.file(file_name.replace(/\.txt$/, '.language'), str)
     }
-    
+
     zip.generateAsync({type:"blob"})
         .then(content => saveAs(content, 'ror2languagefiles.zip'))
 })

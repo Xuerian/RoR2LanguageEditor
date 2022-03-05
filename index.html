@@ -126,6 +126,17 @@
                 margin-bottom: 10px;
             }
 
+            .pair .key,
+            .pair .base-name {
+                display: inline-block;
+            }
+
+            .pair .base-name {
+                font-style: italic;
+                color: #ccc;
+                margin-left: 1em;
+            }
+
             .hidden {
                 display: none;
             }
@@ -304,7 +315,7 @@
             </template>
             <template class=file-pair>
                 <div class=pair>
-                    <div class=key></div>
+                    <div class=key></div><div class=base-name></div>
                     <div class=preview></div>
                     <div class=edit><input type=text class=edit-value></div>
                 </div>
@@ -430,9 +441,23 @@ const applyFilters = () => {
     }
 }
 
+let nameMap = {}
+
 const newEditorPair = (key, value) => {
+    let baseName = null
+    if (key.endsWith('_NAME')) {
+        nameMap[key.split('_').slice(0, -1)] = value
+        baseName = value
+    }
+    else {
+        baseName = nameMap[key.split('_').slice(0, -1)]
+    }
     const pair = tpl('file-pair')
     pair.querySelector('.key').textContent = key
+    if (baseName) {
+        pair.querySelector('.base-name').textContent = baseName
+        pair.setAttribute('base-name', baseName)
+    }
     const preview = pair.querySelector('.preview')
     setPreview(preview, value)
     const input = pair.querySelector('input')

@@ -464,7 +464,7 @@ const newEditorPair = (key, value) => {
     input.value = value.replace(/\n/g, "\\n")
     input.initialValue = input.value
     input.key = key
-    input.pair = pair.querySelector('.pair')
+    input.pair = pair
     input.addEventListener('input', () => {
         setPreview(preview, input.value)
     })

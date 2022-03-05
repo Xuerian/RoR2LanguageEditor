@@ -389,7 +389,7 @@ const tpl = name => {
     if (!e) {
         throw `template.${name} did not match any element`
     }
-    return e.content.cloneNode(true)
+    return e.content.firstElementChild.cloneNode(true)
 }
 
 let strings_files = {}

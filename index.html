@@ -67,6 +67,22 @@
                 max-width: 70ch;
             }
 
+            .waiting input {
+                display: none;
+            }
+
+            p.waiting {
+                font-weight: bold;
+            }
+
+            .waiting .doc:not(.waiting) {
+                opacity: 0.5;
+            }
+
+            fieldset.patch:not(.waiting) p.waiting {
+                display: none;
+            }
+
             input[type=file] {
                 font-size: 1rem;
             }
@@ -156,6 +172,14 @@
                 padding: 5px;
                 background-color: #353535;
                 color: #bbb;
+            }
+
+            .modified .preview {
+                border-color: orange;
+            }
+
+            .hide-unmodified .pair:not(.modified) {
+                display: none;
             }
 
             #TEST {
@@ -249,15 +273,17 @@
                     </dl>
                     <!-- <p>Can load merged files as well</p> -->
                 </fieldset>
-<!--
-                 <fieldset>
-                    <legend>Patches</legend>
-                    <input type=file id=INPUT_FILE_PATCH accept=.patch.txt multiple>
-                    <p>Created by this tool and store translation key/values like language files, but only ones different from the base game</p>
+                 <fieldset class="patch waiting">
+                    <legend>Patch</legend>
+                    <input type=file id=INPUT_FILE_PATCH accept=".ror2lpatch.json,.ror2language.zip">
+                    <p class="doc waiting">Base languages must be loaded before applying a patch</p>
+                    <p class=doc>A JSON file containing key/value pairs to change.</p>
+                    <p class=doc>Saved in the zip file created with this tool - you may also load a ror2language.zip file containing a patch directly.</p>
                 </fieldset>
+<!--
                 <fieldset>
                     <legend>Replacements</legend>
-                    <input type=file id=INPUT_FILE_REPLACEMENT accept=.replace-list.txt multiple>
+                    <input type=file id=INPUT_FILE_REPLACEMENT accept=.r2lreplace.json multiple>
                 </fieldset>
                 <fieldset>
                     <legend>Convert Merged to Patches</legend>
@@ -297,6 +323,8 @@
                     By value
                     <input type=text id=INPUT_FILTER_VALUE>
                 </label>
+                <label><input type=radio checked name=INPUT_FILTER_MODIFIED value="all"> Show all</label>
+                <label><input type=radio name=INPUT_FILTER_MODIFIED value="modified"> Only modified</label>
             </fieldset>
             <div class=palette>
                 <span class=cIsHealth>cIsHealth</span>
@@ -403,6 +431,7 @@ const INPUT_FILE_BASE = document.getElementById('INPUT_FILE_BASE')
 const INPUT_FILTER_KEY = document.getElementById('INPUT_FILTER_KEY')
 const INPUT_FILTER_VALUE = document.getElementById('INPUT_FILTER_VALUE')
 const INPUT_REPLACEMENTS = document.getElementById('INPUT_REPLACEMENTS')
+const INPUT_FILE_PATCH = document.getElementById('INPUT_FILE_PATCH')
 const OUTPUT = document.getElementById('OUTPUT')
 let _PICKUP_VALUE = null
 
@@ -478,6 +507,7 @@ const newEditorPair = (key, value) => {
     input.pair = pair
     input.addEventListener('input', () => {
         setPreview(preview, input.value)
+        input.pair.classList.toggle('modified', input.value !== input.initialValue)
     })
     return [input, pair]
 }
@@ -511,6 +541,7 @@ const renderFilteredFiles = () => {
         }
         OUTPUT.append(file_block)
     }
+    document.querySelector('fieldset.patch').classList.remove('waiting')
     applyFilters()
 }
 
@@ -532,7 +563,7 @@ function onFilesChange() {
                 _PICKUP_VALUE = radioValue('_pickup')
                 renderFilteredFiles()
             }
-       }
+        }
         reader.readAsText(file)
     }
 }
@@ -543,6 +574,44 @@ function onFilesChange() {
 INPUT_FILE_BASE.addEventListener('change', onFilesChange, false)
 onFilesChange.call(INPUT_FILE_BASE)
 
+const applyPatch = patch_json => {
+    const patch = parseBadJSON(patch_json)
+    for (const [file_name, pairs] of Object.entries(patch)) {
+        for (const [key, value] of Object.entries(pairs)) {
+            input_map[file_name][key].value = value
+            input_map[file_name][key].dispatchEvent(new Event('input'))
+            input_map[file_name][key].dispatchEvent(new Event('change'))
+        }
+    }
+}
+
+function patchFiles_onChange()
+{
+    const file = this.files[0] ?? null
+    if (file) {
+        if (file.name.endsWith('.ror2lpatch.json')) {
+            const reader = new FileReader
+            reader.onload = result => {
+                applyPatch(result.target.result)
+            }
+            reader.readAsText(file)
+            applyPatch(file)
+        }
+        else if (file.name.endsWith('.zip')) {
+            JSZip.loadAsync(file).then(zip => {
+                if (zip.files['custom.ror2lpatch.json']) {
+                    zip.files['custom.ror2lpatch.json'].async('string').then(applyPatch)
+                }
+                else {
+                    alert('Zip file did not contain a custom.ror2lpatch.json file')
+                }
+            })
+        }
+    }
+}
+
+INPUT_FILE_PATCH.addEventListener('change', patchFiles_onChange)
+
 function onFiltersChange() {
     applyFilters()
 }
@@ -552,28 +621,47 @@ INPUT_FILTER_VALUE.addEventListener('input', onFiltersChange, false)
 
 document.querySelector('button.export').addEventListener('click', () => {
     const zip = new JSZip;
-    const en = zip.folder('en')
-    const language_ext = zip.folder('language_ext')
+    const folder_en = zip.folder('en')
+    const folder_language = zip.folder('language_ext')
     const output = {}
+    const patch = {}
 
     for (const [file_name, inputs] of Object.entries(input_map)) {
         output[file_name] = {}
         for (const [key, input] of Object.entries(inputs)) {
+            if (input.initialValue && input.value !== input.initialValue) {
+                if (!patch[file_name]) {
+                    patch[file_name] = {}
+                }
+                patch[file_name][key] = input.value
+            }
             const value = input.value.replace(/\\n/g, "\n")
             if (_PICKUP_VALUE === 'desc' && key.endsWith('_DESC') && strings_files[file_name][key.replace('_DESC', '_PICKUP')]) {
                 output[file_name][key.replace('_DESC', '_PICKUP')] = value
             }
             output[file_name][key] = value
         }
-        const str = JSON.stringify({strings: output[file_name]}, null, '	')
-        en.file(file_name, str)
-        language_ext.file(file_name.replace(/\.txt$/, '.language'), str)
+        const str = JSON.stringify({strings: output[file_name]}, null, "\t")
+        folder_en.file(file_name, str)
+        folder_language.file(file_name.replace(/\.txt$/, '.language'), str)
+    }
+
+    if (Object.keys(patch)) {
+        zip.file('custom.ror2lpatch.json', JSON.stringify(patch, null, "\t"))
     }
 
     zip.generateAsync({type:"blob"})
-        .then(content => saveAs(content, 'ror2languagefiles.zip'))
+        .then(content => saveAs(content, 'custom.ror2language.zip'))
 })
 
+function modifiedFilter_onChange()
+{
+    document.body.classList.toggle('hide-unmodified', radioValue('INPUT_FILTER_MODIFIED') === 'modified')
+}
+
+for (const radio of document.querySelectorAll('input[name="INPUT_FILTER_MODIFIED"]')) {
+    radio.addEventListener('change', modifiedFilter_onChange)
+}
         </script>
     </body>
 </html>

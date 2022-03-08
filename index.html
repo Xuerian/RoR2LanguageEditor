@@ -782,11 +782,10 @@ modifiedFilter_onChange()
 
 function showBase_onChange()
 {
-    // this.checked is undefined on page load if hot-reloading on firefox, and toggle(undefined) apparently is "not false, so on"
-    document.body.classList.toggle('show-base', this.checked ? true : false)
+    document.body.classList.toggle('show-base', this.checked)
 }
 INPUT_SHOW_BASE.addEventListener('change', showBase_onChange)
-showBase_onChange()
+showBase_onChange.call(INPUT_SHOW_BASE)
 
 
         </script>

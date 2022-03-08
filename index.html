@@ -438,22 +438,27 @@ const parseBadJSON = (bad, identifier) => {
         return JSON.parse(fixed)
     }
     catch (error) {
-        if (error.message.includes('JSON.parse: expected')) {
-            const [match, message, line, column] = error.message.match(/JSON.parse: (.+?) at line (\d+) column (\d+)/)
-            const lines = bad.split('\n')
-            console.log(`Error parsing [${identifier}]: ${message}`)
+        const matches = error.message.match(/JSON.parse: (.+?) at line (\d+) column (\d+)/)
+        if (matches) {
+            const [match, message, str_line, str_column] = error.message.match(/JSON.parse: (.+?) at line (\d+) column (\d+)/)
+            const line = Number(str_line)
+            const column = Number(str_column)
+            const lines = fixed.split('\n')
+            console.error(`Error parsing [${identifier}]: ${message} at line ${line} column ${column}`)
             const context = [
                 lines[line-2],
                 lines[line-1],
                 lines[line-1].replace(/[^\t ]/g, ' ').substr(0, column-1)+'^ message',
                 lines[line]
-            ].join('\n');
-            console.log(context)
-            console.log(bad)
-            console.log(fixed)
+            ]
+            console.log('Context (Fixed):')
+            console.log(context.join('\n'))
+            console.log('Context (Raw):')
+            console.log(bad.split('\n').slice(line-3, line+1).join('\n'))
             return {}
         }
         else {
+            console.error(`Error parsing [${identifier}]`)
             throw error
         }
     }

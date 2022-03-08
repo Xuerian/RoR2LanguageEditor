@@ -306,6 +306,18 @@
                     <p class="doc fade-before">A JSON file containing key/value pairs to change.</p>
                     <p class="doc fade-before">Saved in the zip file created with this tool - you may also load a ror2language.zip file containing a patch directly.</p>
                 </fieldset>
+
+                <fieldset class="merge waiting">
+                    <legend class="fade-before">Merge language files</legend>
+                    <p class="doc hide-after">Base languages must be loaded before merging</p>
+                    <input class="hide-before" type=file id=INPUT_FILE_MERGE accept=".txt,.language" multiple>
+                    <p class="doc fade-before">You can merge modified language files after opening the base language, like a patch.</p>
+                    <dl class="_merge hide-before">
+                        <dt>Overwrite:</dt>
+                        <dd><label><input type=radio name=_merge value=all checked> All</label></dd>
+                        <dd><label><input type=radio name=_merge value=default> Base values</label></dd>
+                    </dl>
+                </fieldset>
 <!--
                 <fieldset>
                     <legend>Replacements</legend>
@@ -477,6 +489,7 @@ const INPUT_FILTER_KEY = document.getElementById('INPUT_FILTER_KEY')
 const INPUT_FILTER_VALUE = document.getElementById('INPUT_FILTER_VALUE')
 const INPUT_REPLACEMENTS = document.getElementById('INPUT_REPLACEMENTS')
 const INPUT_FILE_PATCH = document.getElementById('INPUT_FILE_PATCH')
+const INPUT_FILE_MERGE = document.getElementById('INPUT_FILE_MERGE')
 const INPUT_SHOW_BASE = document.getElementById('INPUT_SHOW_BASE')
 const OUTPUT = document.getElementById('OUTPUT')
 let _PICKUP_VALUE = null
@@ -646,6 +659,7 @@ const applyPatch = patch_json => {
             }
         }
     }
+    mergeFiles_onChange.call(INPUT_FILE_MERGE)
 }
 
 function patchFiles_onChange()
@@ -670,11 +684,46 @@ function patchFiles_onChange()
             })
         }
     }
+    else {
+        mergeFiles_onChange.call(INPUT_FILE_MERGE)
+    }
 }
 
 // Called after base phase
 INPUT_FILE_PATCH.addEventListener('change', patchFiles_onChange)
 
+
+function mergeFiles_onChange()
+{
+    for (let i = 0; i < this.files.length; i++) {
+        const file = this.files[i]
+        const reader = new FileReader
+        reader.onload = x => {
+            const name = file.name.replace('.language', '.txt')
+            const to_merge = parseBadJSON(x.target.result, file.name).strings
+            if (to_merge) {
+                for (const [key, value] of Object.entries(to_merge)) {
+                    if (input_map[name] && input_map[name][key]) {
+                        input_map[name][key].value = value.replace(/\n/g, "\\n")
+                        input_map[name][key].dispatchEvent(new Event('input'))
+                        input_map[name][key].dispatchEvent(new Event('change'))
+                    }
+                    else if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
+                        console.info(`MERGE NOTICE: ${name}[${key}] not applied, "Tooltip text" is set to "Only use description" --`, value)
+                    }
+                    else {
+                        console.warn(`MERGE ERROR: ${name}[${key}] does not exist. --`, value)
+                    }
+                }
+            }
+        }
+        reader.readAsText(file)
+    }
+    applyFilters()
+}
+
+// Called after patching phase
+INPUT_FILE_MERGE.addEventListener('change', mergeFiles_onChange)
 
 function onFiltersChange() {
     applyFilters()

@@ -575,7 +575,7 @@ INPUT_FILE_BASE.addEventListener('change', onFilesChange, false)
 onFilesChange.call(INPUT_FILE_BASE)
 
 const applyPatch = patch_json => {
-    const patch = parseBadJSON(patch_json)
+    const patch = parseBadJSON(patch_json, 'Patch file')
     for (const [file_name, pairs] of Object.entries(patch)) {
         for (const [key, value] of Object.entries(pairs)) {
             input_map[file_name][key].value = value

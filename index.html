@@ -578,9 +578,14 @@ const applyPatch = patch_json => {
     const patch = parseBadJSON(patch_json, 'Patch file')
     for (const [file_name, pairs] of Object.entries(patch)) {
         for (const [key, value] of Object.entries(pairs)) {
-            input_map[file_name][key].value = value
-            input_map[file_name][key].dispatchEvent(new Event('input'))
-            input_map[file_name][key].dispatchEvent(new Event('change'))
+            if (input_map[file_name][key] ?? false) {
+                input_map[file_name][key].value = value
+                input_map[file_name][key].dispatchEvent(new Event('input'))
+                input_map[file_name][key].dispatchEvent(new Event('change'))
+            }
+            else {
+                console.error(`PATCH ERROR: ${file_name}.${key} does not exist.`)
+            }
         }
     }
 }

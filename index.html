@@ -426,6 +426,12 @@ const parseBadJSON = (bad, identifier) => {
         .replace(/\\'/g, "'")
         // Can't end a list with a comma
         .replace(/,(\W+})/g, '$1')
+        // Fat fingers
+        .replace(/\.,$/gm, ',')
+        // Invalid escapes
+        .replace(/\\(\*|�)/g, '$1')
+        // Un-escaped quotes
+        .replace(/(?<=": ".+?)(?<!\\)"(?!,?\s*$)/gm, '\\"')
         // Comments
         .replace(/^[\t ]+\/\/.+$/gm, '')
     try {

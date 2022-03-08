@@ -599,8 +599,8 @@ function onFilesChange() {
     strings_files = {}
     let waiting = 0
     for (let i = 0; i < this.files.length; i++) {
-        const file = this.files[i];
-        const reader = new FileReader;
+        const file = this.files[i]
+        const reader = new FileReader
         waiting++
         reader.onload = x => {
             waiting--
@@ -614,11 +614,9 @@ function onFilesChange() {
     }
 }
 
-// const REPLACEMENT_LIST = document.querySelector('.replacements dl')
-// REPLACEMENT_LIST.append(tpl('replacement'))
-
 INPUT_FILE_BASE.addEventListener('change', onFilesChange, false)
 onFilesChange.call(INPUT_FILE_BASE)
+
 
 const applyPatch = patch_json => {
     const patch = parseBadJSON(patch_json, 'Patch file')

@@ -612,12 +612,14 @@ function patchFiles_onChange()
 
 INPUT_FILE_PATCH.addEventListener('change', patchFiles_onChange)
 
+
 function onFiltersChange() {
     applyFilters()
 }
 
 INPUT_FILTER_KEY.addEventListener('input', onFiltersChange, false)
 INPUT_FILTER_VALUE.addEventListener('input', onFiltersChange, false)
+
 
 document.querySelector('button.export').addEventListener('click', () => {
     const zip = new JSZip;
@@ -654,6 +656,7 @@ document.querySelector('button.export').addEventListener('click', () => {
         .then(content => saveAs(content, 'custom.ror2language.zip'))
 })
 
+
 function modifiedFilter_onChange()
 {
     document.body.classList.toggle('hide-unmodified', radioValue('INPUT_FILTER_MODIFIED') === 'modified')
@@ -662,6 +665,7 @@ function modifiedFilter_onChange()
 for (const radio of document.querySelectorAll('input[name="INPUT_FILTER_MODIFIED"]')) {
     radio.addEventListener('change', modifiedFilter_onChange)
 }
+
         </script>
     </body>
 </html>

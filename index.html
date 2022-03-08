@@ -625,7 +625,7 @@ const applyPatch = patch_json => {
     for (const [file_name, pairs] of Object.entries(patch)) {
         for (const [key, value] of Object.entries(pairs)) {
             if (input_map[file_name][key] ?? false) {
-                input_map[file_name][key].value = value
+                input_map[file_name][key].value = value.replace(/\n/g, "\\n")
                 input_map[file_name][key].dispatchEvent(new Event('input'))
                 input_map[file_name][key].dispatchEvent(new Event('change'))
             }

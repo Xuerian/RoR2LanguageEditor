@@ -679,9 +679,15 @@ function patchFiles_onChange()
                     zip.files['custom.ror2lpatch.json'].async('string').then(applyPatch)
                 }
                 else {
+                    this.value = null
                     alert('Zip file did not contain a custom.ror2lpatch.json file')
+                    throw "Invalid patch zip"
                 }
             })
+        }
+        else {
+            alert('Patching expects .ror2lpatch.json, or a zip with a custom.ror2lpatch.json file')
+            throw "Invalid merge files"
         }
     }
     else {
@@ -697,6 +703,11 @@ function mergeFiles_onChange()
 {
     for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i]
+        if (!file.name.endsWith('txt') && !file.name.endsWith('.language') && !file.name.endsWith('.json')) {
+            this.value = null
+            alert('Merging expects .txt, .language, or .json files')
+            throw "Invalid merge files"
+        }
         const reader = new FileReader
         reader.onload = x => {
             const name = file.name.replace('.language', '.txt')

@@ -747,7 +747,7 @@ INPUT_FILTER_VALUE.addEventListener('input', onFiltersChange, false)
 document.querySelector('button.export').addEventListener('click', () => {
     const zip = new JSZip;
     const folder_en = zip.folder('en')
-    const folder_language = zip.folder('language_ext')
+    const folder_language = zip.folder('language')
     const output = {}
     const patch = {}
 

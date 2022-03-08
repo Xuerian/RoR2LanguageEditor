@@ -5,7 +5,9 @@ Provides a list of all strings in selected files, presented approximately how th
 
 Edit boxes update the preview as you make changes and allow you to export your modified versions of the loaded language files
 
-A common use of custom language files is showing the full description for items and equipment, the Tooltip options provide a shortcut for this
+Base values and a revert button are available below modified values
+
+A common use of custom language files is showing the full description for items and equipment, the Tooltip options make this easy. Simply open Items.txt and Equipment.txt then save text files.
 
 Filters will hide anything not matching both filter inputs
 
@@ -16,10 +18,12 @@ Filters will hide anything not matching both filter inputs
 * Save text files zip (Easier to save a zip than multiple files), extract en\ files over your game's \en files
 * Revalidate in steam to restore the base languages, or back them up yourself instead
 
-# Patch files
-Patch files are included with the zip file when you save your changes.
+# Patch file
+A patch file is included with the zip file when you save your changes.
 
-Patch files can be loaded by loading the .ror2lpatch.json or the .ror2language.zip file containing it after loading base languages
+A patch file can be loaded by browsing for the .ror2lpatch.json or the .ror2language.zip file containing it after loading base languages
+
+Any number of patch files can be applied over loaded base files.
 
 # Merging modified language files
 Existing language files (Manually edited, for example) can be loaded over base languages

@@ -602,6 +602,7 @@ const renderFilteredFiles = () => {
         waiting.classList.remove('waiting')
         waiting.classList.add('ready')
     }
+    patchFiles_onChange.call(INPUT_FILE_PATCH)
 }
 
 const [test_input, test_pair] = newEditorPair('TEST_STRING', '')
@@ -671,6 +672,7 @@ function patchFiles_onChange()
     }
 }
 
+// Called after base phase
 INPUT_FILE_PATCH.addEventListener('change', patchFiles_onChange)
 
 

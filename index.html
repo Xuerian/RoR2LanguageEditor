@@ -67,20 +67,20 @@
                 max-width: 70ch;
             }
 
-            .waiting input {
+            fieldset.waiting .hide-before {
                 display: none;
             }
 
-            p.waiting {
-                font-weight: bold;
+            fieldset.ready .hide-after {
+                display: none;
             }
 
-            .waiting .doc:not(.waiting) {
+            fieldset.waiting .fade-before {
                 opacity: 0.5;
             }
 
-            fieldset.patch:not(.waiting) p.waiting {
-                display: none;
+            p.hide-after {
+                font-weight: bold;
             }
 
             input[type=file] {
@@ -299,12 +299,12 @@
                     </dl>
                     <!-- <p>Can load merged files as well</p> -->
                 </fieldset>
-                 <fieldset class="patch waiting">
-                    <legend>Patch</legend>
-                    <input type=file id=INPUT_FILE_PATCH accept=".ror2lpatch.json,.ror2language.zip">
-                    <p class="doc waiting">Base languages must be loaded before applying a patch</p>
-                    <p class=doc>A JSON file containing key/value pairs to change.</p>
-                    <p class=doc>Saved in the zip file created with this tool - you may also load a ror2language.zip file containing a patch directly.</p>
+                <fieldset class="patch waiting">
+                    <legend class="fade-before">Patch</legend>
+                    <p class="doc hide-after">Base languages must be loaded before applying a patch</p>
+                    <input class="hide-before" type=file id=INPUT_FILE_PATCH accept=".ror2lpatch.json,.ror2language.zip">
+                    <p class="doc fade-before">A JSON file containing key/value pairs to change.</p>
+                    <p class="doc fade-before">Saved in the zip file created with this tool - you may also load a ror2language.zip file containing a patch directly.</p>
                 </fieldset>
 <!--
                 <fieldset>
@@ -587,8 +587,10 @@ const renderFilteredFiles = () => {
         }
         OUTPUT.append(file_block)
     }
-    document.querySelector('fieldset.patch').classList.remove('waiting')
-    applyFilters()
+    for (const waiting of document.querySelectorAll('.waiting')) {
+        waiting.classList.remove('waiting')
+        waiting.classList.add('ready')
+    }
 }
 
 const [test_input, test_pair] = newEditorPair('TEST_STRING', '')

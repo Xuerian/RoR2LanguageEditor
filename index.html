@@ -716,6 +716,8 @@ function modifiedFilter_onChange()
 for (const radio of document.querySelectorAll('input[name="INPUT_FILTER_MODIFIED"]')) {
     radio.addEventListener('change', modifiedFilter_onChange)
 }
+modifiedFilter_onChange()
+
 
 function showBase_onChange()
 {

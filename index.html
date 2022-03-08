@@ -657,7 +657,6 @@ function patchFiles_onChange()
                 applyPatch(result.target.result)
             }
             reader.readAsText(file)
-            applyPatch(file)
         }
         else if (file.name.endsWith('.zip')) {
             JSZip.loadAsync(file).then(zip => {

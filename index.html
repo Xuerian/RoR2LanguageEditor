@@ -162,6 +162,32 @@
                 margin-left: 1em;
             }
 
+            .pair .base {
+                margin-top: 10px;
+                display: none;
+            }
+
+            body.show-base .pair.modified .base {
+                display: flex;
+            }
+
+            .revert {
+                width: 40px;
+                display: flex;
+            }
+
+            .pair .base-preview {
+                margin-left: 0;
+            }
+
+            .base-raw {
+                font-family: sans-serif;
+                font-size: 0.8rem;
+                padding: 5px;
+                background-color: #353535;
+                color: #bbb;
+            }
+
             .hidden {
                 display: none;
             }
@@ -174,7 +200,7 @@
                 color: #bbb;
             }
 
-            .modified .preview {
+            .modified .preview:not(.base-preview) {
                 border-color: orange;
             }
 
@@ -325,6 +351,7 @@
                 </label>
                 <label><input type=radio checked name=INPUT_FILTER_MODIFIED value="all"> Show all</label>
                 <label><input type=radio name=INPUT_FILTER_MODIFIED value="modified"> Only modified</label>
+                <label><input type=checkbox id=INPUT_SHOW_BASE checked> Show base value</label>
             </fieldset>
             <div class=palette>
                 <span class=cIsHealth>cIsHealth</span>
@@ -357,6 +384,13 @@
                     <div class=key></div><div class=base-name></div>
                     <div class=preview></div>
                     <div class=edit><input type=text class=edit-value></div>
+                    <div class=base>
+                        <div class=revert><button type=button><<</button></div>
+                        <div>
+                            <div class="preview base-preview"></div>
+                            <div class=base-raw></div>
+                        </div>
+                    </div>
                 </div>
             </template>
             <div id=OUTPUT>
@@ -432,6 +466,7 @@ const INPUT_FILTER_KEY = document.getElementById('INPUT_FILTER_KEY')
 const INPUT_FILTER_VALUE = document.getElementById('INPUT_FILTER_VALUE')
 const INPUT_REPLACEMENTS = document.getElementById('INPUT_REPLACEMENTS')
 const INPUT_FILE_PATCH = document.getElementById('INPUT_FILE_PATCH')
+const INPUT_SHOW_BASE = document.getElementById('INPUT_SHOW_BASE')
 const OUTPUT = document.getElementById('OUTPUT')
 let _PICKUP_VALUE = null
 
@@ -500,6 +535,8 @@ const newEditorPair = (key, value) => {
     }
     const preview = pair.querySelector('.preview')
     setPreview(preview, value)
+    const basePreview = pair.querySelector('.base-preview')
+    const baseRaw = pair.querySelector('.base-raw')
     const input = pair.querySelector('input')
     input.value = value.replace(/\n/g, "\\n")
     input.initialValue = input.value
@@ -507,6 +544,15 @@ const newEditorPair = (key, value) => {
     input.pair = pair
     input.addEventListener('input', () => {
         setPreview(preview, input.value)
+        if (!input.baseInitialized) {
+            input.baseInitialized = true
+            setPreview(basePreview, input.initialValue)
+            baseRaw.textContent = input.initialValue
+            pair.querySelector('.revert').addEventListener('click', () => {
+                input.value = input.initialValue
+                input.dispatchEvent(new Event('input'))
+            })
+        }
         input.pair.classList.toggle('modified', input.value !== input.initialValue)
     })
     return [input, pair]
@@ -670,6 +716,15 @@ function modifiedFilter_onChange()
 for (const radio of document.querySelectorAll('input[name="INPUT_FILTER_MODIFIED"]')) {
     radio.addEventListener('change', modifiedFilter_onChange)
 }
+
+function showBase_onChange()
+{
+    // this.checked is undefined on page load if hot-reloading on firefox, and toggle(undefined) apparently is "not false, so on"
+    document.body.classList.toggle('show-base', this.checked ? true : false)
+}
+INPUT_SHOW_BASE.addEventListener('change', showBase_onChange)
+showBase_onChange()
+
 
         </script>
     </body>

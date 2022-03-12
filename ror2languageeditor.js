@@ -1,5 +1,13 @@
 'use_strict';
 
+/**
+ * RoR2's language files are .. sort of JSON. I'm not sure
+ * what they're actually parsed with because any sane JSON
+ * parser doesn't like them. But we can fix them up.
+ * @param {String} bad Potentially invalid JSON
+ * @param {String} identifier Where the JSON came from, for errors
+ * @returns {Object} json
+ */
 const parseBadJSON = (bad, identifier) => {
     const fixed =
         bad
@@ -67,6 +75,10 @@ const INPUT_SHOW_BASE = document.getElementById('INPUT_SHOW_BASE')
 const OUTPUT = document.getElementById('OUTPUT')
 let _PICKUP_VALUE = null
 
+/**
+ * @param {String} name
+ * @returns {HTMLElement}
+ */
 const tpl = name => {
     const e = document.querySelector(`template.${name}`)
     if (!e) {
@@ -156,20 +168,20 @@ const newEditorPair = (key, value) => {
 const renderFiles = () => {
     inputs_by_key = {}
     OUTPUT.innerHTML = ''
-    for (const [file_name, file] of Object.entries(strings_files)) {
+    for (const [file_name, file_data] of Object.entries(strings_files)) {
         const file_block = tpl('file')
         file_block.querySelector('h2').textContent = file_name
         const section = file_block.querySelector('section')
-        for (let [key, value] of Object.entries(file)) {
+        for (let [key, value] of Object.entries(file_data)) {
             if (key.endsWith('_PICKUP')) {
                 if (_PICKUP_VALUE == 'copy') {
-                    const desc = file[key.replace('_PICKUP', '_DESC')]
+                    const desc = file_data[key.replace('_PICKUP', '_DESC')]
                     if (desc) {
                         value = desc
                     }
                 }
                 else if (_PICKUP_VALUE == 'desc') {
-                    if (file[key.replace('_PICKUP', '_DESC')]) {
+                    if (file_data[key.replace('_PICKUP', '_DESC')]) {
                         continue;
                     }
                 }
@@ -185,14 +197,17 @@ const renderFiles = () => {
         waiting.classList.remove('waiting')
         waiting.classList.add('ready')
     }
-    patchFiles_onChange.call(INPUT_FILE_PATCH)
+    patchFilesInput_onChange.call(INPUT_FILE_PATCH)
 }
 
 const [test_input, test_pair] = newEditorPair('TEST_STRING', '')
 test_input.setAttribute('placeholder', 'Test formatting here, it will not be saved or interfere with loaded files')
 document.getElementById('TEST').append(test_pair)
 
-function onFilesChange() {
+/**
+ * @this {HTMLInputElement}
+ */
+function baseFilesInput_onChange() {
     strings_files = {}
     let waiting = 0
     for (let i = 0; i < this.files.length; i++) {
@@ -211,8 +226,8 @@ function onFilesChange() {
     }
 }
 
-INPUT_FILE_BASE.addEventListener('change', onFilesChange, false)
-onFilesChange.call(INPUT_FILE_BASE)
+INPUT_FILE_BASE.addEventListener('change', baseFilesInput_onChange, false)
+baseFilesInput_onChange.call(INPUT_FILE_BASE)
 
 let patch_name = 'custom_language'
 const applyPatch = patch_json => {
@@ -228,10 +243,13 @@ const applyPatch = patch_json => {
             console.error(`PATCH ERROR: ${file_name}.${key} does not exist.`)
         }
     }
-    mergeFiles_onChange.call(INPUT_FILE_MERGE)
+    mergeFilesInput_onChange.call(INPUT_FILE_MERGE)
 }
 
-function patchFiles_onChange()
+/**
+ * @this {HTMLInputElement}
+ */
+function patchFilesInput_onChange()
 {
     const file = this.files[0] ?? null
     if (file) {
@@ -251,15 +269,17 @@ function patchFiles_onChange()
         }
     }
     else {
-        mergeFiles_onChange.call(INPUT_FILE_MERGE)
+        mergeFilesInput_onChange.call(INPUT_FILE_MERGE)
     }
 }
 
 // Called after base phase
-INPUT_FILE_PATCH.addEventListener('change', patchFiles_onChange)
+INPUT_FILE_PATCH.addEventListener('change', patchFilesInput_onChange)
 
-
-function mergeFiles_onChange()
+/**
+ * @this {HTMLInputElement}
+ */
+function mergeFilesInput_onChange()
 {
     for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i]
@@ -293,14 +313,14 @@ function mergeFiles_onChange()
 }
 
 // Called after patching phase
-INPUT_FILE_MERGE.addEventListener('change', mergeFiles_onChange)
+INPUT_FILE_MERGE.addEventListener('change', mergeFilesInput_onChange)
 
-function onFiltersChange() {
+function filterInputs_onChange() {
     applyFilters()
 }
 
-INPUT_FILTER_KEY.addEventListener('input', onFiltersChange, false)
-INPUT_FILTER_VALUE.addEventListener('input', onFiltersChange, false)
+INPUT_FILTER_KEY.addEventListener('input', filterInputs_onChange, false)
+INPUT_FILTER_VALUE.addEventListener('input', filterInputs_onChange, false)
 
 
 document.querySelector('button.export').addEventListener('click', () => {
@@ -350,20 +370,20 @@ document.querySelector('button.export').addEventListener('click', () => {
 })
 
 
-function modifiedFilter_onChange()
+function onlyModifiedToggle_onChange()
 {
     document.body.classList.toggle('hide-unmodified', radioValue('INPUT_FILTER_MODIFIED') === 'modified')
 }
 
 for (const radio of document.querySelectorAll('input[name="INPUT_FILTER_MODIFIED"]')) {
-    radio.addEventListener('change', modifiedFilter_onChange)
+    radio.addEventListener('change', onlyModifiedToggle_onChange)
 }
-modifiedFilter_onChange()
+onlyModifiedToggle_onChange()
 
 
-function showBase_onChange()
+function showBaseValue_onChange()
 {
     document.body.classList.toggle('show-base', this.checked)
 }
-INPUT_SHOW_BASE.addEventListener('change', showBase_onChange)
-showBase_onChange.call(INPUT_SHOW_BASE)
+INPUT_SHOW_BASE.addEventListener('change', showBaseValue_onChange)
+showBaseValue_onChange.call(INPUT_SHOW_BASE)

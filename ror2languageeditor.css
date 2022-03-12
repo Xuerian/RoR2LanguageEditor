@@ -1,0 +1,266 @@
+@font-face {
+	font-family:"bombardier";
+	/* Install or place BOMBARD_.woff in the same folder as this file to load the font locally */
+	src: local('Bombardier'), url('BOMBARD_.woff') format('woff');
+	src: url("https://api.allorigins.win/raw?url=https://candyfonts.com/wp-data/2019/08/07/72363/BOMBARD_.ttf") format("truetype");
+}
+
+p {
+	margin: 0;
+}
+
+body {
+	font-family: Bombardier;
+	text-shadow: 1px 1px black;
+	font-size: 1.2em;
+	background-image: linear-gradient(170deg, #7d7c8f, #405060);
+	background-attachment: fixed;
+	color: white;
+	padding-bottom: 200px;
+}
+
+header {
+	margin-left: 25px;
+	max-width: 70ch;
+}
+
+header p {
+	margin-bottom: 1rem;
+}
+
+main {
+	padding: 25px;
+}
+
+main > fieldset {
+	margin-bottom: 10px;
+}
+
+.load {
+	display: flex;
+}
+
+.load fieldset {
+	display: flex;
+	flex-direction: column;
+	border-color: #aaa;
+	max-width: 300px;
+}
+
+.load p,
+.doc {
+	font-size: 0.8rem;
+	font-family: sans-serif;
+	text-shadow: none;
+	margin-top: 5px;
+}
+
+.doc {
+	max-width: 70ch;
+}
+
+fieldset.waiting .hide-before {
+	display: none;
+}
+
+fieldset.ready .hide-after {
+	display: none;
+}
+
+fieldset.waiting .fade-before {
+	opacity: 0.5;
+}
+
+p.hide-after {
+	font-weight: bold;
+}
+
+input[type=file] {
+	font-size: 1rem;
+}
+
+._pickup {
+	margin: 5px 0 0 0;
+}
+
+.export {
+	padding: 5px 10px;
+	margin: 10px;
+	font-size: 1rem;
+}
+
+.palette {
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid #999;
+	background: #444;
+	box-shadow: 2px 2px 8px #222;
+}
+
+.replacements {
+	margin: 15px 0;
+}
+
+.replacements dd {
+	display: flex;
+	gap: 20px;
+}
+
+.replacements textarea {
+	width: 100%;
+	border: none;
+	padding: 5px;
+	background-color: #353535;
+	color: #bbb;
+	box-shadow: 2px 2px 8px #222;
+}
+
+.preview {
+	padding: 12px;
+	border: 1px solid #999;
+	background: #444;
+}
+
+.lang-file {
+	margin-top: 25px;
+}
+
+.lang-file[open] + .lang-file {
+	margin-top: 100px;
+}
+
+details h2 {
+	display: inline;
+}
+
+.pair .preview,
+.pair .edit {
+	box-shadow: 2px 2px 8px #222;
+	margin-left: 40px;
+}
+
+.pair {
+	margin-bottom: 10px;
+}
+
+.pair .key,
+.pair .base-name {
+	display: inline-block;
+}
+
+.pair .base-name {
+	font-style: italic;
+	color: #ccc;
+	margin-left: 1em;
+}
+
+.pair .base {
+	margin-top: 10px;
+	display: none;
+}
+
+body.show-base .pair.modified .base {
+	display: flex;
+}
+
+.revert {
+	width: 40px;
+	display: flex;
+}
+
+.pair .base-preview {
+	margin-left: 0;
+}
+
+.base-raw {
+	font-family: sans-serif;
+	font-size: 0.8rem;
+	padding: 5px;
+	background-color: #353535;
+	color: #bbb;
+}
+
+.hidden {
+	display: none;
+}
+
+.edit-value {
+	width: 100%;
+	border: none;
+	padding: 5px;
+	background-color: #353535;
+	color: #bbb;
+}
+
+.modified .preview:not(.base-preview) {
+	border-color: orange;
+}
+
+.hide-unmodified .pair:not(.modified) {
+	display: none;
+}
+
+#TEST {
+	margin-top: 40px;
+}
+
+.cIsHealth {
+	color: #e58262;
+}
+
+.cIsDamage {
+	color: #e5c962;
+}
+
+.cIsHealing {
+	color: #9ce562;
+}
+
+.cIsUtility {
+	color: #95cde5;
+}
+
+.cIsVoid {
+	color: #DD7AC6;
+}
+
+.cStack {
+	color: #8990a7;
+}
+
+.cWorldEvent {
+	color: #ffc9f5;
+}
+
+.cArtifact {
+	color: #8a5bc0;
+}
+
+.cUserSetting {
+	color: #ffffd0;
+}
+
+.cDeath {
+	color: #fe7c7c;
+}
+
+.cSub {
+	color: #ccd3e0;
+}
+
+.cMono {
+	color: #8990a7;
+	letter-spacing: 5px;
+}
+
+.cShrine {
+	color: #efeb1c;
+}
+
+.cEvent {
+	color: #8394b3;
+}
+
+.palette span {
+	margin-right: 5px;
+}

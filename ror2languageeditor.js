@@ -198,10 +198,10 @@ const renderFiles = () => {
         }
         OUTPUT.append(file_block)
     }
-    for (const waiting of document.querySelectorAll('.waiting')) {
-        waiting.classList.remove('waiting')
-        waiting.classList.add('ready')
-    }
+	if (Object.keys(inputs_by_key)) {
+		document.body.classList.remove('waiting')
+		document.body.classList.add('ready')
+	}
     patchFilesInput_onChange.call(INPUT_FILE_PATCH)
 }
 

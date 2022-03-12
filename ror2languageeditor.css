@@ -59,15 +59,15 @@ main > fieldset {
 	max-width: 70ch;
 }
 
-fieldset.waiting .hide-before {
+.waiting .hide-before {
 	display: none;
 }
 
-fieldset.ready .hide-after {
+.ready .hide-after {
 	display: none;
 }
 
-fieldset.waiting .fade-before {
+.waiting .fade-before {
 	opacity: 0.5;
 }
 

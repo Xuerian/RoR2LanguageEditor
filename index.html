@@ -420,14 +420,6 @@
         <!-- App script -->
         <script>
 'use_strict';
-const forEach = (subject, func) => {
-	if (subject.forEach) {
-		subject.forEach(func)
-	}
-	else {
-		Object.keys(subject).forEach(k => func.call(subject[k], k))
-	}
-}
 
 const parseBadJSON = (bad, identifier) => {
     const fixed =

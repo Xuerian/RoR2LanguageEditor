@@ -75,6 +75,11 @@ const INPUT_SHOW_BASE = document.getElementById('INPUT_SHOW_BASE')
 const OUTPUT = document.getElementById('OUTPUT')
 let _PICKUP_VALUE = null
 
+const SUFFIX_FILTERS = {}
+for (const checkbox of document.querySelectorAll('input.merge-suffixes')) {
+	SUFFIX_FILTERS[checkbox.value] = checkbox
+}
+
 /**
  * @param {String} name
  * @returns {HTMLElement}
@@ -293,11 +298,17 @@ function mergeFilesInput_onChange()
             const to_merge = parseBadJSON(x.target.result, file.name).strings
             if (to_merge) {
                 for (const [key, value] of Object.entries(to_merge)) {
-                    if (inputs_by_key && inputs_by_key[key]) {
-                        inputs_by_key[key].value = value.replace(/\n/g, "\\n")
-                        inputs_by_key[key].dispatchEvent(new Event('input'))
-                        inputs_by_key[key].dispatchEvent(new Event('change'))
-                    }
+					const suffix = key.split('_').pop()
+					if (suffix && SUFFIX_FILTERS[suffix] && !SUFFIX_FILTERS[suffix].checked) {
+						console.info(`MERGE NOTICE: ${file.name}[${key}] skipped, _${suffix} not selected`)
+						continue
+					}
+					const input = inputs_by_key[key]
+					if (input) {
+						input.value = value.replace(/\n/g, "\\n")
+						input.dispatchEvent(new Event('input'))
+						input.dispatchEvent(new Event('change'))
+					}
                     else if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
                         console.info(`MERGE NOTICE: ${file.name}[${key}] not applied, "Tooltip text" is set to "Only use description" --`, value)
                     }

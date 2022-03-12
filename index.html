@@ -46,11 +46,20 @@
                     <p class="doc hide-after">Base languages must be loaded before merging</p>
                     <input class="hide-before" type=file id=INPUT_FILE_MERGE accept=".txt" multiple>
                     <p class="doc fade-before">You can merge modified language files after opening the base language.</p>
-                    <dl class="_merge hide-before">
-                        <dt>Overwrite:</dt>
-                        <dd><label><input type=radio name=_merge value=all checked> All</label></dd>
-                        <dd><label><input type=radio name=_merge value=default> Base values</label></dd>
-                    </dl>
+                    <div class="_merge hide-before">
+                        <label><input type=radio name=_merge value=all checked> Overwrite all</label>
+                        <label><input type=radio name=_merge value=default> Only base</label>
+                    </div>
+                    <table class="_merge hide-before">
+                        <tr>
+                            <td><label><input type=checkbox class="merge-suffixes" value=NAME checked> _NAME</label></td>
+                            <td><label><input type=checkbox class="merge-suffixes" value=PICKUP checked> _PICKUP</label></td>
+                        </tr>
+                        <tr>
+                            <td><label><input type=checkbox class="merge-suffixes" value=DESC checked> _DESC</label></td>
+                            <td><label><input type=checkbox class="merge-suffixes" value=LORE checked> _LORE</label></td>
+                        </tr>
+                    </table>
                 </fieldset>
 <!--
                 <fieldset>

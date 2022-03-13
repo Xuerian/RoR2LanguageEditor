@@ -72,6 +72,7 @@ const INPUT_REPLACEMENTS = document.getElementById('INPUT_REPLACEMENTS')
 const INPUT_FILE_PATCH = document.getElementById('INPUT_FILE_PATCH')
 const INPUT_FILE_MERGE = document.getElementById('INPUT_FILE_MERGE')
 const INPUT_SHOW_BASE = document.getElementById('INPUT_SHOW_BASE')
+const INPUT_SHOW_LORE = document.getElementById('INPUT_SHOW_LORE')
 const OUTPUT = document.getElementById('OUTPUT')
 let _PICKUP_VALUE = null
 
@@ -111,16 +112,21 @@ const setPreview = (preview, value) => {
 
 let last_key_filter = ''
 let last_value_filter = ''
+let last_show_lore = INPUT_SHOW_LORE.checked
 const applyFilters = () => {
-    if (INPUT_FILTER_KEY.value !== last_key_filter || INPUT_FILTER_VALUE.value !== last_value_filter) {
+    if (INPUT_FILTER_KEY.value !== last_key_filter || INPUT_FILTER_VALUE.value !== last_value_filter || INPUT_SHOW_LORE !== last_show_lore) {
         last_key_filter = INPUT_FILTER_KEY.value.toLowerCase()
         last_value_filter = INPUT_FILTER_VALUE.value.toLowerCase()
+        last_show_lore = INPUT_SHOW_LORE.checked
         for (const [key, input] of Object.entries(inputs_by_key)) {
             let hidden = false
             if (last_key_filter && !key.toLowerCase().includes(last_key_filter)) {
                 hidden = true
             }
-            if (!hidden && last_value_filter && !input.value.toLowerCase().includes(last_value_filter)) {
+            else if (!hidden && last_value_filter && !input.value.toLowerCase().includes(last_value_filter)) {
+                hidden = true
+            }
+            else if (!last_show_lore && key.endsWith('_LORE')) {
                 hidden = true
             }
             input.pair.classList.toggle('hidden', hidden)
@@ -330,8 +336,9 @@ function filterInputs_onChange() {
     applyFilters()
 }
 
-INPUT_FILTER_KEY.addEventListener('input', filterInputs_onChange, false)
-INPUT_FILTER_VALUE.addEventListener('input', filterInputs_onChange, false)
+INPUT_FILTER_KEY.addEventListener('input', filterInputs_onChange, {passive: true})
+INPUT_FILTER_VALUE.addEventListener('input', filterInputs_onChange, {passive: true})
+INPUT_SHOW_LORE.addEventListener('input', filterInputs_onChange, {passive: true})
 
 
 document.querySelector('button.export').addEventListener('click', () => {

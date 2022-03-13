@@ -47,16 +47,16 @@ main > fieldset {
 	max-width: 300px;
 }
 
-.load p,
 .doc {
 	font-size: 0.8rem;
 	font-family: sans-serif;
 	text-shadow: none;
 	margin-top: 5px;
+	max-width: 70ch;
 }
 
-.doc {
-	max-width: 70ch;
+.small {
+	font-size: 0.8em;
 }
 
 .waiting .hide-before {
@@ -71,12 +71,22 @@ main > fieldset {
 	opacity: 0.5;
 }
 
-p.hide-after {
+.bold {
 	font-weight: bold;
 }
 
 input[type=file] {
 	font-size: 1rem;
+}
+
+.start {
+	font-family: Bombardier;
+	color: greenyellow;
+	font-size: 1.2em;
+	padding: 4px;
+	font-weight: normal;
+	margin-top: -4px;
+	margin-bottom: 4px;
 }
 
 label {

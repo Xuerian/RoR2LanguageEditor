@@ -79,6 +79,22 @@ input[type=file] {
 	font-size: 1rem;
 }
 
+label {
+	display: inline-block;
+	white-space: nowrap;
+	border: 1px outset #ccc;
+	padding: 1px 3px;
+	user-select: none;
+}
+
+label input[type=text] {
+	user-select: text;
+}
+
+label:hover {
+	border-color: limegreen;
+}
+
 ._pickup {
 	margin: 5px 0 0 0;
 }

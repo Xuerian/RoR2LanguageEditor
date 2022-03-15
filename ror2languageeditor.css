@@ -9,6 +9,14 @@ p {
 	margin: 0;
 }
 
+html {
+	box-sizing: border-box;
+}
+
+*, *:before, *:after {
+	box-sizing: inherit;
+}
+
 body {
 	font-family: Bombardier;
 	text-shadow: 1px 1px black;

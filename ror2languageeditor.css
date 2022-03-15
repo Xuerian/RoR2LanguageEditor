@@ -47,6 +47,10 @@ main > fieldset {
 	max-width: 300px;
 }
 
+._merge {
+	margin-top: 1em;
+}
+
 .doc {
 	font-size: 0.8rem;
 	font-family: sans-serif;
@@ -110,9 +114,17 @@ label:hover {
 }
 
 .export {
+	display: flex;
+}
+
+.export button {
 	padding: 5px 10px;
 	margin: 10px;
 	font-size: 1rem;
+}
+
+.export-patch {
+	box-shadow: 0 0 2px 2px limegreen;
 }
 
 .palette {

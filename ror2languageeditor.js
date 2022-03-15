@@ -223,11 +223,28 @@ function baseFilesInput_onChange() {
     let waiting = 0
     for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i]
+
+        if (file.name === 'language.json') {
+            console.info('Skipping language definition file [language.json]')
+            continue
+        }
+        // To account for windows naming subsequent downloads .patch(1).json, let's try to handle that gracefully ahead of time
+        if (file.name.includes('.patch') && file.name.endsWith('.json')) {
+            console.info(`Skipping language patch file [${file.name}]`)
+            continue
+        }
+
         const reader = new FileReader
         waiting++
         reader.onload = x => {
             waiting--
-            strings_files[file.name] = parseBadJSON(x.target.result, file.name).strings
+            const strings = parseBadJSON(x.target.result, file.name).strings
+            if (strings) {
+                strings_files[file.name] = strings
+            }
+            else {
+                console.error(file.name, x.target.result)
+            }
             if (waiting === 0) {
                 _PICKUP_VALUE = radioValue('_pickup')
                 renderFiles()
@@ -251,7 +268,7 @@ const applyPatch = patch_json => {
             input.dispatchEvent(new Event('change'))
         }
         else {
-            console.error(`PATCH ERROR: ${key} does not exist.`)
+            console.log(`PATCH WARNING: [${key}] not in loaded language files`)
         }
     }
     mergeFilesInput_onChange.call(INPUT_FILE_MERGE)
@@ -264,7 +281,7 @@ function patchFilesInput_onChange()
 {
     const file = this.files[0] ?? null
     if (file) {
-        const matches = file.name.match(/^(.+)\.patch\.language$/)
+        const matches = file.name.match(/^(.+)\.patch\.(language|json)$/)
         if (matches) {
             patch_name = matches[1]
             const reader = new FileReader
@@ -275,7 +292,7 @@ function patchFilesInput_onChange()
         }
         else {
             this.value = null
-            alert('Patching expects a *.patch.language file')
+            alert('Patching expects a *.patch.language/json file')
             throw "Invalid patch files"
         }
     }
@@ -341,15 +358,9 @@ INPUT_FILTER_VALUE.addEventListener('input', filterInputs_onChange, {passive: tr
 INPUT_SHOW_LORE.addEventListener('input', filterInputs_onChange, {passive: true})
 
 
-document.querySelector('button.export').addEventListener('click', () => {
-    const zip = new JSZip;
-    const folder_patched = zip.folder('patched')
-    const output = {}
+const exportPatch = (output_filename, mimetype)  => {
     const patch = {}
-
     for (const [file_name, data] of Object.entries(strings_files)) {
-        let file_modified = false
-        output[file_name] = {}
         for (const key of Object.keys(data)) {
             if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
                 continue
@@ -360,32 +371,28 @@ document.querySelector('button.export').addEventListener('click', () => {
 
             if (input.initialValue && input.value !== input.initialValue) {
                 patch[key] = value
-                file_modified = true
             }
-
             if (_PICKUP_VALUE === 'desc' && key.endsWith('_DESC')) {
-                file_modified = true
-                output[file_name][key.replace('_DESC', '_PICKUP')] = value
+                patch[key.replace('_DESC', '_PICKUP')] = value
             }
-
-            output[file_name][key] = value
-        }
-
-        if (file_modified) {
-            const str = JSON.stringify({strings: output[file_name]}, null, "\t")
-            folder_patched.file(file_name, str)
         }
     }
 
     if (Object.keys(patch)) {
         const sorted = {}
         Object.keys(patch).sort().forEach(k => sorted[k] = patch[k])
-        zip.folder('plugin').folder(patch_name).file(`${patch_name}.patch.language`, JSON.stringify({strings: sorted}, null, "\t"))
+        const a = document.createElement('a')
+        a.href = window.URL.createObjectURL(new Blob([JSON.stringify({strings: sorted}, null, "\t")], {type: mimetype}))
+        a.download = output_filename
+        a.click()
     }
+    else {
+        alert('No modifications to save')
+    }
+}
 
-    zip.generateAsync({type:"blob"})
-        .then(content => saveAs(content, `${patch_name}.ror2language.zip`))
-})
+document.querySelector('button.export-patch').addEventListener('click', () => exportPatch(`zz_${patch_name}.patch.json`, 'application/json'))
+document.querySelector('button.export-language').addEventListener('click', () => exportPatch(`${patch_name}.patch.language`, 'text/plain'))
 
 
 function onlyModifiedToggle_onChange()

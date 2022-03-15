@@ -86,11 +86,11 @@ for (const checkbox of document.querySelectorAll('input.merge-suffixes')) {
  * @returns {HTMLElement}
  */
 const tpl = name => {
-    const e = document.querySelector(`template.${name}`)
-    if (!e) {
+    const template = document.querySelector(`template.${name}`)
+    if (!template) {
         throw `template.${name} did not match any element`
     }
-    return e.content.firstElementChild.cloneNode(true)
+    return template.content.firstElementChild.cloneNode(true)
 }
 
 let strings_files = {}
@@ -251,7 +251,7 @@ const applyPatch = patch_json => {
             input.dispatchEvent(new Event('change'))
         }
         else {
-            console.error(`PATCH ERROR: ${file_name}.${key} does not exist.`)
+            console.error(`PATCH ERROR: ${key} does not exist.`)
         }
     }
     mergeFilesInput_onChange.call(INPUT_FILE_MERGE)

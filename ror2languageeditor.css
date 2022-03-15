@@ -83,7 +83,7 @@ main > fieldset {
 }
 
 .docs li {
-	margin-bottom: 1ch;
+	margin-bottom: .5ch;
 }
 
 .docs dt {

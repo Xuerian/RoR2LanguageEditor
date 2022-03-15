@@ -123,6 +123,24 @@ label:hover {
 	box-shadow: 2px 2px 8px #222;
 }
 
+.palette span {
+	margin-right: 5px;
+}
+
+.palette .doc {
+	color: #aaa;
+	margin-left: 10px;
+	max-width: none;
+}
+
+.palette .doc span {
+	margin-right: 0;
+}
+
+.palette a:link, .palette a:visited {
+	color: #95cde5;
+}
+
 .replacements {
 	margin: 15px 0;
 }
@@ -285,8 +303,4 @@ body.show-base .pair.modified .base {
 
 .cEvent {
 	color: #8394b3;
-}
-
-.palette span {
-	margin-right: 5px;
 }

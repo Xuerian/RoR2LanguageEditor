@@ -59,6 +59,41 @@ main > fieldset {
 	max-width: 70ch;
 }
 
+.docs section {
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid #999;
+	background: #444;
+	box-shadow: 2px 2px 8px #222;
+	color: #eee;
+	font-family: sans-serif;
+	padding: 0 20px;
+	font-size: .9em;
+	line-height: 1.2em;
+}
+
+.docs summary {
+	color: #9ce562;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.docs strong {
+	color: #95cde5;
+}
+
+.docs li {
+	margin-bottom: 1ch;
+}
+
+.docs dt {
+	font-weight: bold;
+}
+
+.docs dd {
+	margin-bottom: 1ch;
+}
+
 .small {
 	font-size: 0.8em;
 }

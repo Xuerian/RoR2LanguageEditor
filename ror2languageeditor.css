@@ -106,15 +106,13 @@ main > fieldset {
 	font-size: 0.8em;
 }
 
-.waiting .hide-before {
-	display: none;
-}
-
+.waiting .hide-before,
 .ready .hide-after {
 	display: none;
 }
 
-.waiting .fade-before {
+.waiting .fade-before,
+.ready .fade-after {
 	opacity: 0.5;
 }
 

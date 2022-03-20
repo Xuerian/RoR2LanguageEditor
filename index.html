@@ -26,20 +26,19 @@
                     <ol>
                         <li>
                             Browse for and select all the files in <strong>steamapps/common/Risk of Rain 2/Risk of Rain 2_Data/StreamingAssets/Language/en</strong>
-                            <p>You can use the <strong>filter</strong> boxes to narrow down what you are looking for, or search the page with <strong>Ctrl+F</strong></p>
                         </li>
                         <li>
                             Make sure <strong>Tooltip/Pick-up text</strong> is still set to <strong>Only use description</strong>
                         </li>
                         <li>
-                            (Optional) Load a pre-exisiting .patch.json file with changes
+                            <span class=cUserSetting>(Optional)</span> Load a pre-exisiting .patch.json file with changes
                         </li>
                         <li>
-                            (Optional) Merge pre-modified language .txt files to import their changes
+                            <span class=cUserSetting>(Optional)</span> Merge pre-modified language .txt files to import their changes
                         </li>
                         <li>
-                            (Optional) Make any changes you want in the text boxes below each preview
-                        </li>
+                            <span class=cUserSetting>(Optional)</span> Make any changes you want in the text boxes below each preview
+                            <p><i>You can use the <strong>filter</strong> boxes to narrow down what you are looking for, or search the page with <strong>Ctrl+F</strong></i></p>                        </li>
                         <li>
                             Click <strong>Save standard patch</strong>, and place the file in the <strong>/en</strong> folder, and [re-]open your game
                         </li>
@@ -181,11 +180,10 @@
                 <fieldset>
                     <legend>Standard language patch</legend>
                     <button class="export-patch">Save standard patch</button>
-                    <p class="doc">Simply save this file next to the .txt files you opened, and remove it when you don't want it any more.</p>
-                    <p class="doc"><i>Why: Risk of Rain 2 loads .json files in each language folder. By adding a file with a name sorted last alphabetically, it will effectively patch the loaded language, without having to overwrite anything</i></p>
+                    <p class="doc"><strong class="cIsHealing"><u>Save this file next to the .txt files you opened</u></strong></p>
                 </fieldset>
                 <fieldset>
-                    <legend>R2API Language file</legend>
+                    <legend>(Optional) R2API Language file</legend>
                     <button class="export-language">Save R2API language file</button>
                     <p class="doc">To load with R2API as a plugin, extract plugin/{folder} to BepInEx/Plugins/{folder}</p>
                     <p class="doc">(This is just the patch file with a .language extension, which R2API will load)</p>

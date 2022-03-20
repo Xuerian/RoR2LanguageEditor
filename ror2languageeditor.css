@@ -128,7 +128,7 @@ input[type=file] {
 
 .start {
 	font-family: Bombardier;
-	color: greenyellow;
+	color: #9ce562;
 	font-size: 1.2em;
 	padding: 4px;
 	font-weight: normal;
@@ -149,7 +149,7 @@ label input[type=text] {
 }
 
 label:hover {
-	border-color: limegreen;
+	border-color: #9ce562;
 }
 
 ._pickup {
@@ -167,7 +167,7 @@ label:hover {
 }
 
 .export-patch {
-	box-shadow: 0 0 2px 2px limegreen;
+	box-shadow: 0 0 2px 2px #9ce562;
 }
 
 .palette {

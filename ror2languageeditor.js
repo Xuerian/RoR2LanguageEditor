@@ -311,9 +311,13 @@ function mergeFilesInput_onChange()
 {
     for (let i = 0; i < this.files.length; i++) {
         const file = this.files[i]
-        if (!file.name.endsWith('txt')) {
+        if (file.name === 'manifest.json' || file.name === 'README.md' || file.name === 'icon.png') {
+            console.info('Skipping language pack file', file.name)
+            continue
+        }
+        if (!file.name.endsWith('.txt') && !file.name.endsWith('.language')) {
             this.value = null
-            alert('Merging expects .txt language files')
+            alert('Merging expects .txt or .language language files')
             throw "Invalid merge files"
         }
         const reader = new FileReader

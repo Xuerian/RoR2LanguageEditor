@@ -27,6 +27,8 @@ const parseBadJSON = (bad, identifier) => {
         .replace(/(?<=": ".+?)(?<!\\)"(?!,?\s*$)/gm, '\\"')
         // Comments
         .replace(/^[\t ]+\/\/.+$/gm, '')
+        // Non-last lines missing commas
+        .replace(/"\n(\W+")/g, '",$1')
     try {
         return JSON.parse(fixed)
     }

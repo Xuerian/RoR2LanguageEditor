@@ -50,9 +50,11 @@ const parseBadJSON = (bad, identifier) => {
             console.log(context.join('\n'))
             console.log('Context (Raw):')
             console.log(bad.split('\n').slice(line-3, line+1).join('\n'))
+            alert(`Error parsing ${identifier}: ${error.message}`)
             return {}
         }
         else {
+            alert(`Error parsing ${identifier}: ${error.message}`)
             console.error(`Error parsing [${identifier}]`)
             throw error
         }

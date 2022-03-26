@@ -97,6 +97,8 @@ const tpl = name => {
 
 let strings_files = {}
 let inputs_by_key = {}
+let sections = {}
+let labels_by_key = {}
 // let replacements = []
 
 const parseMarkup = str => {
@@ -138,7 +140,7 @@ const applyFilters = () => {
 
 let nameMap = {}
 
-const newEditorPair = (key, value) => {
+const newEditorPair = (key, value, initial_value) => {
     let baseName = null
     if (key.endsWith('_NAME')) {
         nameMap[key.split('_').slice(0, -1)] = value
@@ -159,7 +161,13 @@ const newEditorPair = (key, value) => {
     const baseRaw = pair.querySelector('.base-raw')
     const input = pair.querySelector('input')
     input.value = value.replace(/\n/g, "\\n")
-    input.initialValue = input.value
+    if (initial_value !== null) {
+        input.initialValue = initial_value
+        pair.classList.toggle('modified', input.value !== input.initialValue)
+    }
+    else {
+        input.initialValue = input.value
+    }
     input.key = key
     input.pair = pair
     input.addEventListener('input', () => {
@@ -178,13 +186,43 @@ const newEditorPair = (key, value) => {
     return [input, pair]
 }
 
+/**
+ * Create or update an editor pair. If file_name is not provided, it either uses the existing section for the key, or places it in the Custom section
+ * @param {String|null} file_name File name, if from base language file
+ * @param {String} key
+ * @param {String} value
+ */
+const addOrPatchEditorPair = (key, value, file_name) => {
+    const label = file_name || labels_by_key[key] || 'Custom'
+    // Initialize section
+    if (!sections[label]) {
+        const block = tpl('file')
+        block.querySelector('h2').textContent = label
+        sections[label] = block.querySelector('section')
+        OUTPUT.append(block)
+    }
+    // Create pair editor
+    if (!inputs_by_key[key]) {
+        const [input, pair] = newEditorPair(key, value, file_name ? null : '')
+        inputs_by_key[key] = input
+        labels_by_key[key] = label
+        sections[label].append(pair)
+        if (!label) {
+            input.initialValue = null
+        }
+    }
+    // Update existing editor
+    else {
+        inputs_by_key[key].value = value.replace(/\n/g, "\\n")
+        inputs_by_key[key].dispatchEvent(new Event('input'))
+        inputs_by_key[key].dispatchEvent(new Event('change'))
+    }
+}
+
 const renderFiles = () => {
     inputs_by_key = {}
     OUTPUT.innerHTML = ''
     for (const [file_name, file_data] of Object.entries(strings_files)) {
-        const file_block = tpl('file')
-        file_block.querySelector('h2').textContent = file_name
-        const section = file_block.querySelector('section')
         for (let [key, value] of Object.entries(file_data)) {
             if (key.endsWith('_PICKUP')) {
                 if (_PICKUP_VALUE == 'copy') {
@@ -199,12 +237,8 @@ const renderFiles = () => {
                     }
                 }
             }
-            const [input, pair] = newEditorPair(key, value)
-            input.file = file_name
-            inputs_by_key[key] = input
-            section.append(pair)
+            addOrPatchEditorPair(key, value, file_name)
         }
-        OUTPUT.append(file_block)
     }
 	if (Object.keys(inputs_by_key)) {
 		document.body.classList.remove('waiting')
@@ -263,15 +297,10 @@ let patch_name = 'custom_language'
 const applyPatch = patch_json => {
     const patch = parseBadJSON(patch_json, 'Patch file')
     for (const [key, value] of Object.entries(patch.strings)) {
-        const input = inputs_by_key[key]
-        if (input) {
-            input.value = value.replace(/\n/g, "\\n")
-            input.dispatchEvent(new Event('input'))
-            input.dispatchEvent(new Event('change'))
+        if (!labels_by_key[key]) {
+            console.log(`PATCH: Adding Custom pair`, key, value)
         }
-        else {
-            console.log(`PATCH WARNING: [${key}] not in loaded language files`)
-        }
+        addOrPatchEditorPair(key, value)
     }
     mergeFilesInput_onChange.call(INPUT_FILE_MERGE)
 }
@@ -332,17 +361,15 @@ function mergeFilesInput_onChange()
 						console.info(`MERGE NOTICE: ${file.name}[${key}] skipped, _${suffix} not selected`)
 						continue
 					}
-					const input = inputs_by_key[key]
-					if (input) {
-						input.value = value.replace(/\n/g, "\\n")
-						input.dispatchEvent(new Event('input'))
-						input.dispatchEvent(new Event('change'))
+					if (labels_by_key[key]) {
+                        addOrPatchEditorPair(key, value)
 					}
                     else if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
                         console.info(`MERGE NOTICE: ${file.name}[${key}] not applied, "Tooltip text" is set to "Only use description" --`, value)
                     }
                     else {
-                        console.warn(`MERGE ERROR: ${file.name}[${key}] does not exist. --`, value)
+                        console.log(`MERGE ${file.name}: Adding custom pair`, key, value)
+                        addOrPatchEditorPair(key, value)
                     }
                 }
             }
@@ -366,21 +393,18 @@ INPUT_SHOW_LORE.addEventListener('input', filterInputs_onChange, {passive: true}
 
 const exportPatch = (output_filename, mimetype)  => {
     const patch = {}
-    for (const [file_name, data] of Object.entries(strings_files)) {
-        for (const key of Object.keys(data)) {
-            if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
-                continue
-            }
+    for (const [key, input] of Object.entries(inputs_by_key)) {
+        if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
+            continue
+        }
 
-            const input = inputs_by_key[key]
-            const value = input.value.replace(/\\n/g, "\n")
+        const value = input.value.replace(/\\n/g, "\n")
 
-            if (input.initialValue && input.value !== input.initialValue) {
-                patch[key] = value
-            }
-            if (_PICKUP_VALUE === 'desc' && key.endsWith('_DESC')) {
-                patch[key.replace('_DESC', '_PICKUP')] = value
-            }
+        if (labels_by_key[key] === 'Custom' || input.value !== input.initialValue) {
+            patch[key] = value
+        }
+        if (_PICKUP_VALUE === 'desc' && key.endsWith('_DESC')) {
+            patch[key.replace('_DESC', '_PICKUP')] = value
         }
     }
 

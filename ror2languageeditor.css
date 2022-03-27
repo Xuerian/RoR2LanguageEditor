@@ -307,6 +307,13 @@ body.show-base .pair.modified .base {
 	display: none;
 }
 
+span.sprite {
+	border: 1px solid orange;
+	font-family: consolas;
+	font-size: 0.7em;
+	padding: 2px 4px;
+}
+
 #TEST {
 	margin-top: 40px;
 }

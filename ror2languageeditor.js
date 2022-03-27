@@ -129,6 +129,7 @@ const parseMarkup = str => {
     return str
         .replace(/<(style|color)(?:=([^>]+))?>/gi, "<span data-tag='$1' data-value='$2'>")
         .replace(/<\/(style|color)>/gi, '</span>')
+        .replace(/<sprite name="(.+?)"( tint=\d+)?>/gi, "<span data-tag='sprite' class=sprite>SPRITE:$1</span>")
 }
 
 const setPreview = (preview, value) => {

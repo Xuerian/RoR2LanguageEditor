@@ -151,14 +151,20 @@ const applyFilters = () => {
             if (last_key_filter && !key.toLowerCase().includes(last_key_filter)) {
                 hidden = true
             }
-            else if (!hidden && last_value_filter && !input.value.toLowerCase().includes(last_value_filter)) {
+            else if (!last_show_lore && key.endsWith('_LORE')) {
                 hidden = true
             }
-            else if (!last_show_lore && key.endsWith('_LORE')) {
+            else if (!hidden && last_value_filter && !input.value.toLowerCase().includes(last_value_filter)) {
                 hidden = true
             }
             input.closest('.pair').classList.toggle('hidden', hidden)
         }
+    }
+    for (const details of document.querySelectorAll('#OUTPUT > details')) {
+        const total = details.querySelectorAll('.pair').length
+        const visible = details.querySelectorAll('.pair:not(.hidden)').length
+        details.querySelector('summary .count').innerText = (visible < total) ? `(${visible}/${total})` : `(${total})`
+        details.classList.toggle('all-hidden', visible === 0)
     }
 }
 

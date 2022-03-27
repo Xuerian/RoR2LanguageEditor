@@ -224,12 +224,28 @@ label:hover {
 	margin-top: 25px;
 }
 
-.lang-file[open] + .lang-file {
-	margin-top: 100px;
+.lang-file[open]:not(.all-hidden) {
+	margin-bottom: 100px;
+}
+
+.all-hidden {
+	color: #aaa;
+}
+
+.all-hidden + .all-hidden {
+	margin-top: 5px;
+}
+
+.all-hidden h2 {
+	margin: 0;
 }
 
 details h2 {
 	display: inline;
+}
+
+summary .count {
+	margin-left: 1ch;
 }
 
 .pair .preview,

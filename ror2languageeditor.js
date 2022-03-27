@@ -11,6 +11,8 @@
 const parseBadJSON = (bad, identifier) => {
     const fixed =
         bad
+        // Normalize newlines
+        .replace(/\\r\\n/g, '\\n')
         // Unquoted strings, randomly
         .replace('strings:', '"strings":')
         // Can't end a list with a comma
@@ -127,11 +129,10 @@ const parseMarkup = str => {
     return str
         .replace(/<(style|color)(?:=([^>]+))?>/gi, "<span data-tag='$1' data-value='$2'>")
         .replace(/<\/(style|color)>/gi, '</span>')
-        .replace(/(\\n|\n)/g, '<br>')
 }
 
 const setPreview = (preview, value) => {
-    preview.innerHTML = parseMarkup(value)
+    preview.innerHTML = value ? parseMarkup(value) : null
     preview.querySelectorAll('span[data-tag=color]').forEach(e => e.style.color = e.getAttribute('data-value'))
     preview.querySelectorAll('span[data-tag=style]').forEach(e => e.classList.add(e.getAttribute('data-value')))
 }
@@ -155,14 +156,38 @@ const applyFilters = () => {
             else if (!last_show_lore && key.endsWith('_LORE')) {
                 hidden = true
             }
-            input.pair.classList.toggle('hidden', hidden)
+            input.closest('.pair').classList.toggle('hidden', hidden)
         }
     }
 }
 
 let nameMap = {}
 
-const newEditorPair = (key, value, initial_value) => {
+/**
+ * @this {HTMLInputElement}
+ */
+function editor_onInput()
+{
+    const pair = this.closest('.pair')
+    setPreview(pair.querySelector('.preview'), this.value)
+    if (!this.baseInitialized) {
+        this.baseInitialized = true
+        setPreview(pair.querySelector('.base-preview'), this.initialValue)
+        pair.querySelector('.base-raw').textContent = this.initialValue
+        pair.querySelector('.revert').addEventListener('click', () => {
+            this.value = this.initialValue
+            this.dispatchEvent(new Event('input'))
+        })
+    }
+    pair.classList.toggle('modified', this.value !== this.initialValue)
+    // Resizing with the browser will probably set a width
+    if (!this.style.width) {
+        this.style.height = '0px'
+        this.style.height = `${this.scrollHeight}px`
+    }
+}
+
+const newEditorPair = (key, value, initially_empty = false) => {
     let baseName = null
     if (key.endsWith('_NAME')) {
         nameMap[key.split('_').slice(0, -1)] = value
@@ -177,34 +202,11 @@ const newEditorPair = (key, value, initial_value) => {
         pair.querySelector('.base-name').textContent = baseName
         pair.setAttribute('base-name', baseName)
     }
-    const preview = pair.querySelector('.preview')
-    setPreview(preview, value)
-    const basePreview = pair.querySelector('.base-preview')
-    const baseRaw = pair.querySelector('.base-raw')
-    const input = pair.querySelector('input')
-    input.value = value.replace(/\n/g, "\\n")
-    if (initial_value !== null) {
-        input.initialValue = initial_value
-        pair.classList.toggle('modified', input.value !== input.initialValue)
-    }
-    else {
-        input.initialValue = input.value
-    }
-    input.key = key
-    input.pair = pair
-    input.addEventListener('input', () => {
-        setPreview(preview, input.value)
-        if (!input.baseInitialized) {
-            input.baseInitialized = true
-            setPreview(basePreview, input.initialValue)
-            baseRaw.textContent = input.initialValue
-            pair.querySelector('.revert').addEventListener('click', () => {
-                input.value = input.initialValue
-                input.dispatchEvent(new Event('input'))
-            })
-        }
-        input.pair.classList.toggle('modified', input.value !== input.initialValue)
-    })
+    const input = pair.querySelector('textarea')
+    input.value = value
+    input.initialValue = initially_empty ? '' : value
+    input.addEventListener('input', editor_onInput)
+    setTimeout(() => editor_onInput.call(input))
     return [input, pair]
 }
 
@@ -225,7 +227,7 @@ const addOrPatchEditorPair = (key, value, file_name) => {
     }
     // Create pair editor
     if (!inputs_by_key[key]) {
-        const [input, pair] = newEditorPair(key, value, file_name ? null : '')
+        const [input, pair] = newEditorPair(key, value, !file_name)
         inputs_by_key[key] = input
         labels_by_key[key] = label
         sections[label].append(pair)
@@ -235,7 +237,7 @@ const addOrPatchEditorPair = (key, value, file_name) => {
     }
     // Update existing editor
     else {
-        inputs_by_key[key].value = value.replace(/\n/g, "\\n")
+        inputs_by_key[key].value = value
         inputs_by_key[key].dispatchEvent(new Event('input'))
         inputs_by_key[key].dispatchEvent(new Event('change'))
     }

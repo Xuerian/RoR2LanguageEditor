@@ -216,6 +216,8 @@ label:hover {
 	padding: 12px;
 	border: 1px solid #999;
 	background: #444;
+	box-shadow: 2px 2px 8px #222;
+	white-space: pre-wrap;
 }
 
 .lang-file {
@@ -232,7 +234,6 @@ details h2 {
 
 .pair .preview,
 .pair .edit {
-	box-shadow: 2px 2px 8px #222;
 	margin-left: 40px;
 }
 
@@ -270,6 +271,7 @@ body.show-base .pair.modified .base {
 }
 
 .base-raw {
+	white-space: pre-wrap;
 	font-family: sans-serif;
 	font-size: 0.8rem;
 	padding: 5px;
@@ -282,11 +284,13 @@ body.show-base .pair.modified .base {
 }
 
 .edit-value {
+	box-shadow: 2px 2px 8px #222;
 	width: 100%;
 	border: none;
 	padding: 5px;
 	background-color: #353535;
 	color: #bbb;
+	overflow-y: hidden;
 }
 
 .modified .preview:not(.base-preview) {

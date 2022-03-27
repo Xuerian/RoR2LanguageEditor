@@ -41,7 +41,7 @@ const parseBadJSON = (bad, identifier) => {
             const context = [
                 lines[line-2],
                 lines[line-1],
-                lines[line-1].replace(/[^\t ]/g, ' ').substr(0, column-1)+'^ message',
+                lines[line-1].replace(/[^\t ]/g, ' ').substring(0, column-1)+'^ message',
                 lines[line]
             ]
             console.log('Context (Fixed):')

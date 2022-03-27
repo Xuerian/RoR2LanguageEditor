@@ -61,6 +61,30 @@ const parseBadJSON = (bad, identifier) => {
     }
 }
 
+/**
+ * Return a promise for a file as text. Attempts to load as ascii if unexpected output is found (Base game files..)
+ * See: https://stackoverflow.com/questions/47914510/how-to-find-out-charset-of-text-file-loaded-by-inputtype-file-in-javascript
+ * @param {File} file
+ * @param {Boolean} try_ascii
+ * @returns {Promise<Object>}
+ */
+const readStringsFile = (file, try_ascii) => {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onerror = reject
+        reader.onload = () => {
+            if (reader.result.includes("\uFFFD")) {
+                console.log(`Loading ${file.name} in ascii compat mode`)
+                readStringsFile(file, true).then(resolve).catch(reject)
+            }
+            else {
+                resolve(parseBadJSON(reader.result, file.name).strings)
+            }
+        }
+        reader.readAsText(file, try_ascii ? 'CP1251' : undefined)
+    })
+}
+
 const radioValue = (name) => {
     for (const e of document.querySelectorAll(`input[name=${name}]`)) {
         if (e.checked) {
@@ -258,37 +282,31 @@ document.getElementById('TEST').append(test_pair)
  */
 function baseFilesInput_onChange() {
     strings_files = {}
-    let waiting = 0
-    for (let i = 0; i < this.files.length; i++) {
-        const file = this.files[i]
-
-        if (file.name === 'language.json') {
-            console.info('Skipping language definition file [language.json]')
-            continue
-        }
-        // To account for windows naming subsequent downloads .patch(1).json, let's try to handle that gracefully ahead of time
-        if (file.name.includes('.patch') && file.name.endsWith('.json')) {
-            console.info(`Skipping language patch file [${file.name}]`)
-            continue
-        }
-
-        const reader = new FileReader
-        waiting++
-        reader.onload = x => {
-            waiting--
-            const strings = parseBadJSON(x.target.result, file.name).strings
-            if (strings) {
-                strings_files[file.name] = strings
-            }
-            else {
-                console.error(file.name, x.target.result)
-            }
-            if (waiting === 0) {
-                _PICKUP_VALUE = radioValue('_pickup')
-                renderFiles()
-            }
-        }
-        reader.readAsText(file)
+    if (this.files.length) {
+        Promise.all(
+            Array.from(this.files)
+            .filter(file => {
+                if (file.name === 'language.json') {
+                    console.info('Skipping language definition file [language.json]')
+                    return false
+                }
+                // To account for windows naming subsequent downloads .patch(1).json, let's try to handle that gracefully ahead of time
+                if (file.name.includes('.patch') && file.name.endsWith('.json')) {
+                    console.info(`Skipping language patch file [${file.name}]`)
+                    return false
+                }
+                return true
+            })
+            .map(file => readStringsFile(file).then(strings => {
+                if (strings) {
+                    strings_files[file.name] = strings
+                }
+            }))
+        )
+        .then(() => {
+            _PICKUP_VALUE = radioValue('_pickup')
+            renderFiles()
+        })
     }
 }
 
@@ -296,16 +314,6 @@ INPUT_FILE_BASE.addEventListener('change', baseFilesInput_onChange, false)
 baseFilesInput_onChange.call(INPUT_FILE_BASE)
 
 let patch_name = 'custom_language'
-const applyPatch = patch_json => {
-    const patch = parseBadJSON(patch_json, 'Patch file')
-    for (const [key, value] of Object.entries(patch.strings)) {
-        if (!labels_by_key[key]) {
-            console.log(`PATCH: Adding Custom pair`, key, value)
-        }
-        addOrPatchEditorPair(key, value)
-    }
-    mergeFilesInput_onChange.call(INPUT_FILE_MERGE)
-}
 
 /**
  * @this {HTMLInputElement}
@@ -317,11 +325,15 @@ function patchFilesInput_onChange()
         const matches = file.name.match(/^(.+)\.patch\.(language|json)$/)
         if (matches) {
             patch_name = matches[1]
-            const reader = new FileReader
-            reader.onload = result => {
-                applyPatch(result.target.result)
-            }
-            reader.readAsText(file)
+            readStringsFile(file).then(strings => {
+                for (const [key, value] of Object.entries(strings)) {
+                    if (!labels_by_key[key]) {
+                        console.log(`PATCH: Adding Custom pair`, key, value)
+                    }
+                    addOrPatchEditorPair(key, value)
+                }
+                mergeFilesInput_onChange.call(INPUT_FILE_MERGE)
+            })
         }
         else {
             this.value = null
@@ -342,43 +354,47 @@ INPUT_FILE_PATCH.addEventListener('change', patchFilesInput_onChange)
  */
 function mergeFilesInput_onChange()
 {
-    for (let i = 0; i < this.files.length; i++) {
-        const file = this.files[i]
-        if (file.name === 'manifest.json' || file.name === 'README.md' || file.name === 'icon.png') {
-            console.info('Skipping language pack file', file.name)
-            continue
-        }
-        if (!file.name.endsWith('.txt') && !file.name.endsWith('.language')) {
-            this.value = null
-            alert('Merging expects .txt or .language language files')
-            throw "Invalid merge files"
-        }
-        const reader = new FileReader
-        reader.onload = x => {
-            const to_merge = parseBadJSON(x.target.result, file.name).strings
-            if (to_merge) {
-                for (const [key, value] of Object.entries(to_merge)) {
-					const suffix = key.split('_').pop()
-					if (suffix && SUFFIX_FILTERS[suffix] && !SUFFIX_FILTERS[suffix].checked) {
-						console.info(`MERGE NOTICE: ${file.name}[${key}] skipped, _${suffix} not selected`)
-						continue
-					}
-					if (labels_by_key[key]) {
-                        addOrPatchEditorPair(key, value)
-					}
-                    else if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
-                        console.info(`MERGE NOTICE: ${file.name}[${key}] not applied, "Tooltip text" is set to "Only use description" --`, value)
-                    }
-                    else {
-                        console.log(`MERGE ${file.name}: Adding custom pair`, key, value)
-                        addOrPatchEditorPair(key, value)
+    if (this.files.length) {
+        Promise.all(
+            Array.from(this.files)
+            .filter(file => {
+                if (file.name === 'manifest.json' || file.name === 'README.md' || file.name === 'icon.png') {
+                    console.info('Skipping language pack file', file.name)
+                    return false
+                }
+                if (!file.name.endsWith('.txt') && !file.name.endsWith('.language')) {
+                    this.value = null
+                    alert('Merging expects .txt or .language language files')
+                    return false
+                }
+                return true
+            })
+            .map(file => readStringsFile(file).then(to_merge => {
+                if (to_merge) {
+                    for (const [key, value] of Object.entries(to_merge)) {
+                        const suffix = key.split('_').pop()
+                        if (suffix && SUFFIX_FILTERS[suffix] && !SUFFIX_FILTERS[suffix].checked) {
+                            console.info(`MERGE NOTICE: ${file.name}[${key}] skipped, _${suffix} not selected`)
+                            continue
+                        }
+                        if (labels_by_key[key]) {
+                            addOrPatchEditorPair(key, value)
+                        }
+                        else if (_PICKUP_VALUE === 'desc' && key.endsWith('_PICKUP')) {
+                            console.info(`MERGE NOTICE: ${file.name}[${key}] not applied, "Tooltip text" is set to "Only use description" --`, value)
+                        }
+                        else {
+                            console.log(`MERGE ${file.name}: Adding custom pair`, key, value)
+                            addOrPatchEditorPair(key, value)
+                        }
                     }
                 }
-            }
-        }
-        reader.readAsText(file)
+            }))
+        ).then(applyFilters)
     }
-    applyFilters()
+    else {
+        applyFilters()
+    }
 }
 
 // Called after patching phase

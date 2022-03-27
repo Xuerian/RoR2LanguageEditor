@@ -209,14 +209,14 @@ label:hover {
 	padding: 5px;
 	background-color: #353535;
 	color: #bbb;
-	box-shadow: 2px 2px 8px #222;
+	/* box-shadow: 2px 2px 8px #222; */
 }
 
 .preview {
 	padding: 12px;
-	border: 1px solid #999;
+	border: 2px solid #777;
 	background: #444;
-	box-shadow: 2px 2px 8px #222;
+	/* box-shadow: 2px 2px 8px #222; */
 	white-space: pre-wrap;
 	max-width: 99ch;
 }
@@ -285,12 +285,15 @@ summary:hover h2 {
 	display: none;
 }
 
-.base .preview {
-	border: none;
-}
-
 body.show-base .pair.modified .base {
 	display: flex;
+}
+
+.pair .base-preview {
+	margin-left: 0;
+	box-shadow: none;
+	border: none;
+	border-radius: 10px 10px 0 0;
 }
 
 .revert {
@@ -299,20 +302,20 @@ body.show-base .pair.modified .base {
 	margin-right: 5px;
 }
 
-.pair .base-preview {
-	margin-left: 0;
-	box-shadow: none;
+.base-raw,
+.edit-value {
+	font-family: bombardier;
+	max-width: 99ch;
+	color: #bbb;
+	background-color: #353535;
+	padding: 5px;
+	font-size: 1rem;
 }
 
 .base-raw {
 	white-space: pre-wrap;
-	font-family: monospace;
-	font-size: 0.8rem;
-	padding: 5px;
-	background-color: #353535;
-	color: #bbb;
 	text-shadow: initial;
-	max-width: 123ch;
+	border-radius: 0 0 10px 10px;
 }
 
 .hidden {
@@ -320,19 +323,14 @@ body.show-base .pair.modified .base {
 }
 
 .edit-value {
-	box-shadow: 2px 2px 8px #222;
+	/* box-shadow: 2px 2px 8px #222; */
 	width: 100%;
 	border: none;
-	padding: 5px;
-	background-color: #353535;
-	color: #bbb;
 	overflow-y: hidden;
-	font-family: monospace;
-	max-width: 123ch;
 }
 
 .modified .preview:not(.base-preview) {
-	border-color: orange;
+	border-color: #9ce562;
 }
 
 .hide-unmodified .pair:not(.modified) {
@@ -340,7 +338,7 @@ body.show-base .pair.modified .base {
 }
 
 span.sprite {
-	border: 1px solid orange;
+	border: 1px solid #e5c962;
 	font-family: monospace;
 	font-size: 0.7em;
 	padding: 2px 4px;

@@ -13,16 +13,12 @@ const parseBadJSON = (bad, identifier) => {
         bad
         // Unquoted strings, randomly
         .replace('strings:', '"strings":')
-        // Why \B?
-        .replace(/\\B/g, "B")
-        // Only escape double quotes, because we only use double quotes
-        .replace(/\\'/g, "'")
         // Can't end a list with a comma
         .replace(/,(\W+})/g, '$1')
         // Fat fingers
         .replace(/\.,$/gm, ',')
         // Invalid escapes
-        .replace(/\\(\*|�)/g, '$1')
+        .replace(/\\(\*|\u201D|\u201C|B|')/g, '$1')
         // Un-escaped quotes
         .replace(/(?<=": ".+?)(?<!\\)"(?!,?\s*$)/gm, '\\"')
         // Comments

@@ -194,7 +194,7 @@ function editor_onInput()
         pair.querySelector('.revert').addEventListener('click', () => {
             this.value = this.initialValue
             this.dispatchEvent(new Event('input'))
-        })
+        }, {passive: true})
     }
     pair.classList.toggle('modified', this.value !== this.initialValue)
     // Resizing with the browser will probably set a width
@@ -228,8 +228,8 @@ const newEditorPair = (key, value, initially_empty = false) => {
     const input = pair.querySelector('textarea')
     input.value = value
     input.initialValue = initially_empty ? '' : value
-    input.addEventListener('input', editor_onInput)
-    input.addEventListener('focus', editor_onInput)
+    input.addEventListener('input', editor_onInput, {passive: true})
+    input.addEventListener('focus', editor_onInput, {passive: true})
     setTimeout(() => editor_onInput.call(input))
     return [input, pair]
 }
@@ -332,7 +332,7 @@ function baseFilesInput_onChange() {
     }
 }
 
-INPUT_FILE_BASE.addEventListener('change', baseFilesInput_onChange, false)
+INPUT_FILE_BASE.addEventListener('change', baseFilesInput_onChange, {passive: true})
 baseFilesInput_onChange.call(INPUT_FILE_BASE)
 
 let patch_name = 'custom_language'
@@ -369,7 +369,7 @@ function patchFilesInput_onChange()
 }
 
 // Called after base phase
-INPUT_FILE_PATCH.addEventListener('change', patchFilesInput_onChange)
+INPUT_FILE_PATCH.addEventListener('change', patchFilesInput_onChange, {passive: true})
 
 /**
  * @this {HTMLInputElement}
@@ -420,7 +420,7 @@ function mergeFilesInput_onChange()
 }
 
 // Called after patching phase
-INPUT_FILE_MERGE.addEventListener('change', mergeFilesInput_onChange)
+INPUT_FILE_MERGE.addEventListener('change', mergeFilesInput_onChange, {passive: true})
 
 function filterInputs_onChange() {
     applyFilters()
@@ -465,8 +465,8 @@ const exportPatch = (output_filename, mimetype)  => {
     }
 }
 
-document.querySelector('button.export-patch').addEventListener('click', () => exportPatch(`zz_${patch_name}.patch.json`, 'application/json'))
-document.querySelector('button.export-language').addEventListener('click', () => exportPatch(`${patch_name}.patch.language`, 'text/plain'))
+document.querySelector('button.export-patch').addEventListener('click', () => exportPatch(`zz_${patch_name}.patch.json`, 'application/json'), {passive: true})
+document.querySelector('button.export-language').addEventListener('click', () => exportPatch(`${patch_name}.patch.language`, 'text/plain'), {passive: true})
 
 
 function onlyModifiedToggle_onChange()
@@ -475,7 +475,7 @@ function onlyModifiedToggle_onChange()
 }
 
 for (const radio of document.querySelectorAll('input[name="INPUT_FILTER_MODIFIED"]')) {
-    radio.addEventListener('change', onlyModifiedToggle_onChange)
+    radio.addEventListener('change', onlyModifiedToggle_onChange, {passive: true})
 }
 onlyModifiedToggle_onChange()
 
@@ -484,5 +484,5 @@ function showBaseValue_onChange()
 {
     document.body.classList.toggle('show-base', this.checked)
 }
-INPUT_SHOW_BASE.addEventListener('change', showBaseValue_onChange)
+INPUT_SHOW_BASE.addEventListener('change', showBaseValue_onChange, {passive: true})
 showBaseValue_onChange.call(INPUT_SHOW_BASE)

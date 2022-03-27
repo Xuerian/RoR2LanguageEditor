@@ -218,6 +218,7 @@ label:hover {
 	background: #444;
 	box-shadow: 2px 2px 8px #222;
 	white-space: pre-wrap;
+	max-width: 99ch;
 }
 
 .lang-file {
@@ -295,6 +296,7 @@ body.show-base .pair.modified .base {
 .revert {
 	width: 40px;
 	display: flex;
+	margin-right: 5px;
 }
 
 .pair .base-preview {
@@ -309,6 +311,8 @@ body.show-base .pair.modified .base {
 	padding: 5px;
 	background-color: #353535;
 	color: #bbb;
+	text-shadow: initial;
+	max-width: 123ch;
 }
 
 .hidden {
@@ -324,6 +328,7 @@ body.show-base .pair.modified .base {
 	color: #bbb;
 	overflow-y: hidden;
 	font-family: monospace;
+	max-width: 123ch;
 }
 
 .modified .preview:not(.base-preview) {
@@ -391,7 +396,8 @@ span.sprite {
 
 .cMono {
 	color: #8990a7;
-	letter-spacing: 5px;
+	letter-spacing: .5em;
+	line-height: 1.3em;
 }
 
 .cShrine {

@@ -240,12 +240,22 @@ label:hover {
 	margin: 0;
 }
 
-details h2 {
+summary h2 {
 	display: inline;
+	padding: 2px;
 }
 
 summary .count {
 	margin-left: 1ch;
+}
+
+summary:hover {
+	cursor: pointer;
+}
+
+summary:hover h2 {
+	background-color: #fff3;
+	border-radius: 5px;
 }
 
 .pair .preview,

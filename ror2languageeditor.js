@@ -15,18 +15,20 @@ const parseBadJSON = (bad, identifier) => {
         .replace(/\\r\\n/g, '\\n')
         // Unquoted strings, randomly
         .replace('strings:', '"strings":')
+        // Trailing whitespace
+        .replace(/\s+$/gm, '')
         // Can't end a list with a comma
-        .replace(/,(\W+})/g, '$1')
+        .replace(/,(?=$\s+})/gm, '')
+        // But, must end other items with one
+        .replace(/"(?=$\s+")/gm, '",')
         // Fat fingers
         .replace(/\.,$/gm, ',')
-        // Invalid escapes
+        // Invalid escapes (*, Left/right Quote, B?)
         .replace(/\\(\*|\u201D|\u201C|B|')/g, '$1')
         // Un-escaped quotes
         .replace(/(?<=": ".+?)(?<!\\)"(?!,?\s*$)/gm, '\\"')
         // Comments
         .replace(/^[\t ]+\/\/.+$/gm, '')
-        // Non-last lines missing commas
-        .replace(/"\n(\W+")/g, '",$1')
     try {
         return JSON.parse(fixed)
     }

@@ -64,9 +64,9 @@ const parseBadJSON = (bad, identifier) => {
  * See: https://stackoverflow.com/questions/47914510/how-to-find-out-charset-of-text-file-loaded-by-inputtype-file-in-javascript
  * @param {File} file
  * @param {Boolean} try_ascii
- * @returns {Promise<Object>}
+ * @returns {Promise<object>}
  */
-const readStringsFile = (file, try_ascii) => {
+const readStringsFile = (file, try_ascii = false) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader()
         reader.onerror = reject
@@ -125,6 +125,10 @@ let sections = {}
 let labels_by_key = {}
 // let replacements = []
 
+/**
+ * @param {String} str
+ * @returns {String}
+ */
 const parseMarkup = str => {
     return str
         .replace(/<(style|color)(?:=([^>]+))?>/gi, "<span data-tag='$1' data-value='$2'>")
@@ -132,6 +136,10 @@ const parseMarkup = str => {
         .replace(/<sprite name="(.+?)"( tint=\d+)?>/gi, "<span data-tag='sprite' class=sprite>SPRITE:$1</span>")
 }
 
+/**
+ * @param {HTMLElement} preview
+ * @param {String} value
+ */
 const setPreview = (preview, value) => {
     preview.innerHTML = value ? parseMarkup(value) : null
     preview.querySelectorAll('span[data-tag=color]').forEach(e => e.style.color = e.getAttribute('data-value'))
@@ -171,7 +179,7 @@ const applyFilters = () => {
 let nameMap = {}
 
 /**
- * @this {HTMLInputElement}
+ * @this {HTMLTextAreaElement}
  */
 function editor_onInput()
 {
@@ -194,6 +202,12 @@ function editor_onInput()
     }
 }
 
+/**
+ * @param {String} key
+ * @param {String} value
+ * @param {Boolean} initially_empty
+ * @returns {[HTMLTextAreaElement, HTMLElement]}
+ */
 const newEditorPair = (key, value, initially_empty = false) => {
     let baseName = null
     if (key.endsWith('_NAME')) {
@@ -415,6 +429,10 @@ INPUT_FILTER_VALUE.addEventListener('input', filterInputs_onChange, {passive: tr
 INPUT_SHOW_LORE.addEventListener('input', filterInputs_onChange, {passive: true})
 
 
+/**
+ * @param {String} output_filename
+ * @param {String} mimetype eg application/json or text/plain
+ */
 const exportPatch = (output_filename, mimetype)  => {
     const patch = {}
     for (const [key, input] of Object.entries(inputs_by_key)) {

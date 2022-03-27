@@ -190,7 +190,7 @@ function editor_onInput()
     // Resizing with the browser will probably set a width
     if (!this.style.width) {
         this.style.height = '0px'
-        this.style.height = `${this.scrollHeight}px`
+        this.style.height = `max(1ch, ${this.scrollHeight}px)`
     }
 }
 
@@ -213,6 +213,7 @@ const newEditorPair = (key, value, initially_empty = false) => {
     input.value = value
     input.initialValue = initially_empty ? '' : value
     input.addEventListener('input', editor_onInput)
+    input.addEventListener('focus', editor_onInput)
     setTimeout(() => editor_onInput.call(input))
     return [input, pair]
 }

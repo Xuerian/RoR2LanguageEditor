@@ -254,7 +254,12 @@ details h2 {
 
 .pair .base {
 	margin-top: 10px;
+	margin-left: 40px;
 	display: none;
+}
+
+.base .preview {
+	border: none;
 }
 
 body.show-base .pair.modified .base {
@@ -268,6 +273,7 @@ body.show-base .pair.modified .base {
 
 .pair .base-preview {
 	margin-left: 0;
+	box-shadow: none;
 }
 
 .base-raw {

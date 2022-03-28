@@ -218,7 +218,8 @@ label:hover {
 	background: #444;
 	/* box-shadow: 2px 2px 8px #222; */
 	white-space: pre-wrap;
-	max-width: 99ch;
+	/* Approximately 99ch */
+	max-width: 947px;
 }
 
 .lang-file {
@@ -304,12 +305,12 @@ body.show-base .pair.modified .base {
 
 .base-raw,
 .edit-value {
-	font-family: bombardier;
-	max-width: 99ch;
+	font-family: monospace;
+	max-width: 947px;
 	color: #bbb;
 	background-color: #353535;
 	padding: 5px;
-	font-size: 1rem;
+	font-size: .8rem;
 }
 
 .base-raw {
@@ -325,7 +326,7 @@ body.show-base .pair.modified .base {
 .edit-value {
 	/* box-shadow: 2px 2px 8px #222; */
 	width: 100%;
-	border: none;
+	border: 2px solid #777;
 	overflow-y: hidden;
 }
 

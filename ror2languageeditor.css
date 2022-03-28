@@ -265,6 +265,11 @@ summary:hover h2 {
 	margin-left: 40px;
 }
 
+.pair .edit {
+	padding-left: 2px;
+	padding-right: 2px;
+}
+
 .pair {
 	margin-bottom: 10px;
 }
@@ -306,7 +311,6 @@ body.show-base .pair.modified .base {
 .base-raw,
 .edit-value {
 	font-family: monospace;
-	max-width: 947px;
 	color: #bbb;
 	background-color: #353535;
 	padding: 5px;
@@ -314,19 +318,18 @@ body.show-base .pair.modified .base {
 }
 
 .base-raw {
+	max-width: 947px;
 	white-space: pre-wrap;
 	text-shadow: initial;
 	border-radius: 0 0 10px 10px;
 }
 
-.hidden {
-	display: none;
-}
-
 .edit-value {
 	/* box-shadow: 2px 2px 8px #222; */
+	/* 4px narrower than preview and raw to account for preview's borders */
+	max-width: 943px;
+	border: none;
 	width: 100%;
-	border: 2px solid #777;
 	overflow-y: hidden;
 }
 
@@ -335,6 +338,10 @@ body.show-base .pair.modified .base {
 }
 
 .hide-unmodified .pair:not(.modified) {
+	display: none;
+}
+
+.hidden {
 	display: none;
 }
 

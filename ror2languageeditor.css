@@ -46,6 +46,7 @@ main > fieldset {
 
 .load {
 	display: flex;
+	width: fit-content;
 }
 
 .load fieldset {
@@ -53,6 +54,11 @@ main > fieldset {
 	flex-direction: column;
 	border-color: #aaa;
 	max-width: 300px;
+}
+
+/* Not sure why fit-content respects left but not right */
+.load fieldset:last-child {
+	margin-right: 20px;
 }
 
 ._merge {

@@ -422,8 +422,12 @@ function mergeFilesInput_onChange()
 // Called after patching phase
 INPUT_FILE_MERGE.addEventListener('change', mergeFilesInput_onChange, {passive: true})
 
+let filter_timer = null
 function filterInputs_onChange() {
-    applyFilters()
+    if (filter_timer) {
+        clearTimeout(filter_timer)
+    }
+    filter_timer = setTimeout(applyFilters, 500)
 }
 
 INPUT_FILTER_KEY.addEventListener('input', filterInputs_onChange, {passive: true})

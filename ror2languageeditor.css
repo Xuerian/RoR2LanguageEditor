@@ -192,8 +192,10 @@ label:hover {
 	max-width: none;
 }
 
-.palette .doc span {
+.palette .doc :not(a) {
 	margin-right: 0;
+	font-family: bombardier;
+	font-size: 1rem;
 }
 
 .palette a:link, .palette a:visited {

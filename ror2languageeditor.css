@@ -421,3 +421,11 @@ span.sprite {
 .cEvent {
 	color: #8394b3;
 }
+
+.cHumanObjective {
+	color: #e4ef82;	
+}
+
+.cLunarObjective {
+	color: #b2b8ee;	
+}
